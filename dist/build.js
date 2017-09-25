@@ -68979,11 +68979,11 @@ gl.enable(gl.DEPTH_TEST);
 // gl.cullFace(gl.BACK);
 gl.clearColor(0, 0, 0, 1);
 let scene = new __WEBPACK_IMPORTED_MODULE_1__engine_scene__["a" /* default */]();
-let mesh = __WEBPACK_IMPORTED_MODULE_2__engine_mesh__["a" /* default */].loadObj("/models/plane.obj");
+let mesh = __WEBPACK_IMPORTED_MODULE_2__engine_mesh__["a" /* default */].loadObj("models/plane.obj");
 if (mesh == undefined)
     throw "LoadingError";
-let vertexShader = __WEBPACK_IMPORTED_MODULE_3__request__["a" /* default */].sync("/shaders/vert.vs");
-let fragmentShader = __WEBPACK_IMPORTED_MODULE_3__request__["a" /* default */].sync("/shaders/frag.fs");
+let vertexShader = __WEBPACK_IMPORTED_MODULE_3__request__["a" /* default */].sync("shaders/vert.vs");
+let fragmentShader = __WEBPACK_IMPORTED_MODULE_3__request__["a" /* default */].sync("shaders/frag.fs");
 if (vertexShader === undefined || fragmentShader === undefined)
     throw "LoadingError";
 mesh.addShaders(vertexShader, fragmentShader);
@@ -68993,7 +68993,7 @@ mesh.diffuse = 1;
 mesh.specular = 5;
 mesh.shininess = 10;
 scene.addMesh(mesh);
-mesh = __WEBPACK_IMPORTED_MODULE_2__engine_mesh__["a" /* default */].loadObj("/models/test.obj");
+mesh = __WEBPACK_IMPORTED_MODULE_2__engine_mesh__["a" /* default */].loadObj("models/test.obj");
 if (mesh == undefined)
     throw "LoadingError";
 mesh.addShaders(vertexShader, fragmentShader);
@@ -69004,7 +69004,7 @@ mesh.diffuse = 15;
 mesh.specular = 5;
 mesh.shininess = 10;
 scene.addMesh(mesh);
-mesh = __WEBPACK_IMPORTED_MODULE_2__engine_mesh__["a" /* default */].loadObj("/models/dragon.obj");
+mesh = __WEBPACK_IMPORTED_MODULE_2__engine_mesh__["a" /* default */].loadObj("models/dragon.obj");
 if (mesh == undefined)
     throw "LoadingError";
 mesh.addShaders(vertexShader, fragmentShader);
@@ -69017,7 +69017,7 @@ mesh.specular = 1;
 mesh.shininess = 10;
 mesh.translateZ(-50);
 scene.addMesh(mesh);
-mesh = __WEBPACK_IMPORTED_MODULE_2__engine_mesh__["a" /* default */].loadObj("/models/teapot.obj");
+mesh = __WEBPACK_IMPORTED_MODULE_2__engine_mesh__["a" /* default */].loadObj("models/teapot.obj");
 if (mesh == undefined)
     throw "LoadingError";
 mesh.addShaders(vertexShader, fragmentShader);
@@ -69029,8 +69029,6 @@ mesh.specular = 1;
 mesh.shininess = 10;
 mesh.translateZ(50);
 scene.addMesh(mesh);
-// scene.translateY(200)
-scene.translateZ(-200);
 scene.addPointLight(new __WEBPACK_IMPORTED_MODULE_0_babylonjs__["Vector3"](100, 20, 20), new __WEBPACK_IMPORTED_MODULE_0_babylonjs__["Vector4"](1, 1, 1, 1));
 scene.lookAt(scene.getPointLight(0).pos);
 // scene.lookAt(scene.getMesh(1).pos)

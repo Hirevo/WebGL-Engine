@@ -23,11 +23,11 @@ gl.clearColor(0, 0, 0, 1);
 
 let scene = new Scene()
 
-let mesh = Mesh.loadObj("/models/plane.obj")
+let mesh = Mesh.loadObj("models/plane.obj")
 if (mesh == undefined)
     throw "LoadingError"
-let vertexShader = XHR.sync("/shaders/vert.vs")
-let fragmentShader = XHR.sync("/shaders/frag.fs")
+let vertexShader = XHR.sync("shaders/vert.vs")
+let fragmentShader = XHR.sync("shaders/frag.fs")
 if (vertexShader === undefined || fragmentShader === undefined)
     throw "LoadingError"
 mesh.addShaders(vertexShader, fragmentShader)
@@ -38,7 +38,7 @@ mesh.specular = 5;
 mesh.shininess = 10;
 scene.addMesh(mesh)
 
-mesh = Mesh.loadObj("/models/test.obj")
+mesh = Mesh.loadObj("models/test.obj")
 if (mesh == undefined)
     throw "LoadingError"
 mesh.addShaders(vertexShader, fragmentShader)
@@ -50,7 +50,7 @@ mesh.specular = 5;
 mesh.shininess = 10;
 scene.addMesh(mesh)
 
-mesh = Mesh.loadObj("/models/dragon.obj")
+mesh = Mesh.loadObj("models/dragon.obj")
 if (mesh == undefined)
 throw "LoadingError"
 mesh.addShaders(vertexShader, fragmentShader)
@@ -64,7 +64,7 @@ mesh.shininess = 10;
 mesh.translateZ(-50)
 scene.addMesh(mesh)
 
-mesh = Mesh.loadObj("/models/teapot.obj")
+mesh = Mesh.loadObj("models/teapot.obj")
 if (mesh == undefined)
     throw "LoadingError"
 mesh.addShaders(vertexShader, fragmentShader)
@@ -77,8 +77,6 @@ mesh.shininess = 10;
 mesh.translateZ(50)
 scene.addMesh(mesh)
 
-// scene.translateY(200)
-scene.translateZ(-200)
 scene.addPointLight(new BABYLON.Vector3(100, 20, 20), new BABYLON.Vector4(1, 1, 1, 1))
 scene.lookAt(scene.getPointLight(0).pos)
 // scene.lookAt(scene.getMesh(1).pos)
