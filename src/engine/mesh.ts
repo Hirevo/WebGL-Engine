@@ -1,7 +1,7 @@
 import * as BABYLON from "babylonjs"
 import { Vertex, Face, Program } from "./utils"
-import XHR from "./request"
-import gl from "./index"
+import XHR from "./../request"
+import gl from "./../index"
 import { PointLight, AmbientLight } from "./scene";
 
 export default class Mesh {
@@ -27,9 +27,9 @@ export default class Mesh {
     private color: BABYLON.Vector4;
     private uMMatrix: BABYLON.Matrix;
     private uNormalMatrix: BABYLON.Matrix;
-    private pos: BABYLON.Vector3;
-    private rot: BABYLON.Vector3;
-    private scl: BABYLON.Vector3;
+    pos: BABYLON.Vector3;
+    rot: BABYLON.Vector3;
+    scl: BABYLON.Vector3;
 
     constructor() {
         this.matricesNeedUpdate = true

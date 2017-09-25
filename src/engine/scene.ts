@@ -1,6 +1,6 @@
 import * as BABYLON from "babylonjs"
 import Mesh from "./mesh"
-import gl from "./index"
+import gl from "./../index"
 
 export interface PointLight {
     pos: BABYLON.Vector4;
@@ -13,7 +13,6 @@ export interface AmbientLight {
 
 export default class Scene {
 
-
     uVMatrix: BABYLON.Matrix;
     uPMatrix: BABYLON.Matrix;
     uVInvMatrix: BABYLON.Matrix;
@@ -21,9 +20,10 @@ export default class Scene {
     private meshes: Mesh[];
     private pointLights: PointLight[];
     private ambientLight: AmbientLight;
-    private pos: BABYLON.Vector3;
-    private rot: BABYLON.Vector3;
-    private scl: BABYLON.Vector3;
+    target: BABYLON.Vector3 | BABYLON.Vector4;
+    pos: BABYLON.Vector3;
+    rot: BABYLON.Vector3;
+    scl: BABYLON.Vector3;
 
     constructor() {
         this.viewNeedsUpdate = true
@@ -31,6 +31,7 @@ export default class Scene {
         this.pos = BABYLON.Vector3.Zero()
         this.rot = BABYLON.Vector3.Zero()
         this.scl = new BABYLON.Vector3(1, 1, 1)
+        this.target = BABYLON.Vector3.Zero()
         this.pointLights = []
         this.ambientLight = { color: BABYLON.Vector4.Zero() }
     }
@@ -47,6 +48,10 @@ export default class Scene {
         if (!color)
             color = new BABYLON.Vector4(1, 1, 1, 1)
         this.pointLights.push({ pos: new BABYLON.Vector4(pos.x, pos.y, pos.z, 1), color })
+    }
+
+    getPointLight(idx: number) {
+        return this.pointLights[idx]
     }
 
     addAmbientLight(color: BABYLON.Vector4) {
@@ -99,39 +104,42 @@ export default class Scene {
         this.viewNeedsUpdate = true
     }
 
-    rotate(v1: number, v2: number, v3: number) {
-        this.rot.x = v1
-        this.rot.y = v2
-        this.rot.z = v3
+    // rotate(v1: number, v2: number, v3: number) {
+    //     this.rot.x = v1
+    //     this.rot.y = v2
+    //     this.rot.z = v3
+    //     this.viewNeedsUpdate = true
+    // }
+
+    // rotateX(angle: number) {
+    //     this.rot.x += angle
+    //     this.viewNeedsUpdate = true
+    // }
+
+    // rotateY(angle: number) {
+    //     this.rot.y += angle
+    //     this.viewNeedsUpdate = true
+    // }
+
+    // rotateZ(angle: number) {
+    //     this.rot.z += angle
+    //     this.viewNeedsUpdate = true
+    // }
+
+    lookAt(target: BABYLON.Vector3 | BABYLON.Vector4) {
+        this.target = target
         this.viewNeedsUpdate = true
     }
 
-    rotateX(angle: number) {
-        this.rot.x += angle
-        this.viewNeedsUpdate = true
-    }
-
-    rotateY(angle: number) {
-        this.rot.y += angle
-        this.viewNeedsUpdate = true
-    }
-
-    rotateZ(angle: number) {
-        this.rot.z += angle
-        this.viewNeedsUpdate = true
+    cancelUpdates() {
+        this.viewNeedsUpdate = false
     }
 
     updateView() {
-        this.uVMatrix = BABYLON.Matrix.Identity()
-        this.uVMatrix = BABYLON.Matrix.Translation(this.pos.x, this.pos.y, this.pos.z).multiply(this.uVMatrix)
-        this.uVMatrix = BABYLON.Matrix.Scaling(this.scl.x, this.scl.y, this.scl.z).multiply(this.uVMatrix)
-        this.uVMatrix = BABYLON.Matrix.RotationX(this.rot.x).multiply(this.uVMatrix)
-        this.uVMatrix = BABYLON.Matrix.RotationY(this.rot.y).multiply(this.uVMatrix)
-        this.uVMatrix = BABYLON.Matrix.RotationZ(this.rot.z).multiply(this.uVMatrix)
+        this.uVMatrix = BABYLON.Matrix.LookAtRH(this.pos, new BABYLON.Vector3(this.target.x, this.target.y, this.target.z), BABYLON.Vector3.Up())
         this.uPMatrix = BABYLON.Matrix.PerspectiveFovRH(45, window.innerWidth / window.innerHeight, 0.1, 10000)
         this.uVInvMatrix = BABYLON.Matrix.Invert(this.uVMatrix)
         this.viewNeedsUpdate = false
-        console.log("UPDATED VIEW MATRICES")
     }
 
     render(mode: number) {

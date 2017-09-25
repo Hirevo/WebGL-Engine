@@ -1,5 +1,5 @@
 import * as BABYLON from "babylonjs"
-import gl from "./index"
+import gl from "./../index"
 
 export interface Vertex {
     pos: BABYLON.Vector3;
