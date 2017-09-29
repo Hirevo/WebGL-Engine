@@ -79,7 +79,6 @@ scene.addMesh(mesh)
 
 scene.addPointLight(new BABYLON.Vector3(100, 20, 20), new BABYLON.Vector4(1, 1, 1, 1))
 scene.lookAt(scene.getPointLight(0).pos)
-// scene.lookAt(scene.getMesh(1).pos)
 // scene.addAmbientLight(new BABYLON.Vector4(0.1, 0.1, 0.1, 1.0))
 
 let light = scene.getPointLight(0), pos = 0, posInc = 0.01

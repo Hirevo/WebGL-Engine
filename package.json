@@ -4,7 +4,7 @@
   "description": "A little WebGL rendering engine. :D",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc && webpack"
   },
   "keywords": [
     "WebGL",
@@ -17,7 +17,9 @@
   "author": "Hirevo",
   "license": "ISC",
   "dependencies": {
-    "babylonjs": "^3.1.0-alpha1"
+    "babylonjs": "^3.1.0-alpha1",
+    "typescript": "^2.5.3",
+    "webpack": "^3.6.0"
   },
   "devDependencies": {
     "@types/babylonjs": "^2.4.1"
