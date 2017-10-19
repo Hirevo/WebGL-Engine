@@ -29,8 +29,8 @@ export default class PointLightHelper extends Mesh {
         this.pos = light.pos
         this.setColor(light.color)
         this.genBuffers()
-        let vertexShader = XHR.sync("/shaders/helpers/pointLightHelper/vert.vs")
-        let fragmentShader = XHR.sync("/shaders/helpers/pointLightHelper/frag.fs")
+        let vertexShader = XHR.sync("shaders/helpers/pointLightHelper/vert.vs")
+        let fragmentShader = XHR.sync("shaders/helpers/pointLightHelper/frag.fs")
         if (vertexShader === undefined || fragmentShader === undefined)
             throw "LoadingError"
         this.addShaders(vertexShader, fragmentShader)
