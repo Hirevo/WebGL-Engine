@@ -13,12 +13,7 @@ varying highp vec4      normal;
 varying highp vec4      mPos;
 varying highp vec4      mvPos;
 
-float linmap(float val, float A, float B, float a, float b) {
-    return (val - A)*(b-a)/(B-A) + a;
-}
-
 void main() {
-
     mPos = uMMatrix * vec4(aPosition, 1.0);
     mvPos = uVMatrix * mPos;
     gl_Position = uPMatrix * mvPos;

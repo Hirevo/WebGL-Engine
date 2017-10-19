@@ -89,3 +89,7 @@ export class Program {
             gl.uniformMatrix4fv(location, false, content.asArray())
     }
 }
+
+export function map(val: number, a: number, b: number, A: number, B: number) {
+    return (val - a) * (B - A) / (b - a) + A
+}

@@ -1,9 +1,16 @@
 import * as BABYLON from "babylonjs"
-import Mesh from "./mesh"
+import Mesh from "./Mesh"
 import gl from "./../index"
 
 export interface PointLight {
-    pos: BABYLON.Vector4;
+    pos: BABYLON.Vector3;
+    color: BABYLON.Vector4;
+}
+
+export interface SpotLight {
+    pos: BABYLON.Vector3;
+    dir: BABYLON.Vector3;
+    aperture: number;
     color: BABYLON.Vector4;
 }
 
@@ -19,6 +26,7 @@ export default class Scene {
     private viewNeedsUpdate: boolean;
     private meshes: Mesh[];
     private pointLights: PointLight[];
+    private spotLights: SpotLight[]
     private ambientLight: AmbientLight;
     target: BABYLON.Vector3 | BABYLON.Vector4;
     pos: BABYLON.Vector3;
@@ -33,6 +41,7 @@ export default class Scene {
         this.scl = new BABYLON.Vector3(1, 1, 1)
         this.target = BABYLON.Vector3.Zero()
         this.pointLights = []
+        this.spotLights = []
         this.ambientLight = { color: BABYLON.Vector4.Zero() }
     }
 
@@ -44,18 +53,30 @@ export default class Scene {
         return this.meshes[idx]
     }
 
+    removeMesh(idx: number) {
+        this.meshes.splice(idx, 1)
+    }
+
     addPointLight(pos: BABYLON.Vector3, color?: BABYLON.Vector4) {
         if (!color)
             color = new BABYLON.Vector4(1, 1, 1, 1)
-        this.pointLights.push({ pos: new BABYLON.Vector4(pos.x, pos.y, pos.z, 1), color })
+        this.pointLights.push({ pos: new BABYLON.Vector3(pos.x, pos.y, pos.z), color })
     }
 
     getPointLight(idx: number) {
         return this.pointLights[idx]
     }
 
+    removePointLight(idx: number) {
+        this.pointLights.splice(idx, 1)
+    }
+
     addAmbientLight(color: BABYLON.Vector4) {
         this.ambientLight = { color }
+    }
+
+    removeAmbientLight() {
+        this.ambientLight = { color: BABYLON.Vector4.Zero() }
     }
 
     translate(v1: number | BABYLON.Vector3, v2 = 0, v3 = 0) {
@@ -104,28 +125,6 @@ export default class Scene {
         this.viewNeedsUpdate = true
     }
 
-    // rotate(v1: number, v2: number, v3: number) {
-    //     this.rot.x = v1
-    //     this.rot.y = v2
-    //     this.rot.z = v3
-    //     this.viewNeedsUpdate = true
-    // }
-
-    // rotateX(angle: number) {
-    //     this.rot.x += angle
-    //     this.viewNeedsUpdate = true
-    // }
-
-    // rotateY(angle: number) {
-    //     this.rot.y += angle
-    //     this.viewNeedsUpdate = true
-    // }
-
-    // rotateZ(angle: number) {
-    //     this.rot.z += angle
-    //     this.viewNeedsUpdate = true
-    // }
-
     lookAt(target: BABYLON.Vector3 | BABYLON.Vector4) {
         this.target = target
         this.viewNeedsUpdate = true
@@ -145,6 +144,6 @@ export default class Scene {
     render(mode: number) {
         if (this.viewNeedsUpdate)
             this.updateView()
-        this.meshes.forEach(mesh => mesh.display(mode, this.uVMatrix, this.uPMatrix, this.uVInvMatrix, this.pointLights, this.ambientLight))
+        this.meshes.forEach(mesh => mesh.display(mode, this.uVMatrix, this.uPMatrix, this.uVInvMatrix, this.pointLights, this.spotLights, this.ambientLight))
     }
 }

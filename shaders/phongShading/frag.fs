@@ -1,6 +1,6 @@
 
 struct              PointLight {
-    highp vec4      pos;
+    highp vec3      pos;
     highp vec4      color;
 };
 
@@ -46,7 +46,7 @@ void                main() {
         for (int idx = 0; idx < 20; idx++) {
             if (idx >= int(uNbPLights))
                 break;
-            highp vec4 vertexToLight = normalize(uPLights[idx].pos - mPos);
+            highp vec4 vertexToLight = normalize(vec4(uPLights[idx].pos, 1) - mPos);
 
             diffuseColors += clamp(getDiffuseCoef(vertexToLight, finalNormal) * color * uPLights[idx].color, 0.0, 1.0);
             specColors += clamp(getSpecCoef(vertexToCamera, vertexToLight, finalNormal) * color * uPLights[idx].color, 0.0, 1.0);

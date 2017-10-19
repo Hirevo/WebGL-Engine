@@ -4,7 +4,7 @@
   "description": "A little WebGL rendering engine. :D",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && webpack"
+    "build": "bash -c 'tsc && NODE_ENV=production webpack'"
   },
   "keywords": [
     "WebGL",
@@ -22,6 +22,7 @@
     "webpack": "^3.6.0"
   },
   "devDependencies": {
-    "@types/babylonjs": "^2.4.1"
+    "@types/babylonjs": "^2.4.1",
+    "uglifyjs-webpack-plugin": "^1.0.0-beta.3"
   }
 }

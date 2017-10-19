@@ -2,7 +2,8 @@ import * as BABYLON from "babylonjs"
 import { Vertex, Face, Program } from "./utils"
 import XHR from "./../request"
 import gl from "./../index"
-import { PointLight, AmbientLight } from "./scene";
+import { PointLight, AmbientLight, SpotLight } from "./Scene";
+import Geometry from "./Geometry";
 
 export default class Mesh {
 
@@ -10,64 +11,37 @@ export default class Mesh {
     shininess = 1;
     diffuse = 1;
 
-    private matricesNeedUpdate: boolean;
-    private buffersNeedUpdate: boolean;
-    private vertexNormalsComputed: boolean;
-
-    private vertices: Vertex[];
-    private faces: Face[];
-
-    private vbuffer: WebGLBuffer;
-    private wvbuffer: WebGLBuffer;
-    private nbuffer: WebGLBuffer;
-    private wnbuffer: WebGLBuffer;
-
-    private program: Program;
-
-    private color: BABYLON.Vector4;
-    private uMMatrix: BABYLON.Matrix;
-    private uNormalMatrix: BABYLON.Matrix;
+    color: BABYLON.Vector4;
     pos: BABYLON.Vector3;
     rot: BABYLON.Vector3;
     scl: BABYLON.Vector3;
+    geometry: Geometry
 
-    constructor() {
+    protected matricesNeedUpdate: boolean;
+    protected buffersNeedUpdate: boolean;
+
+    protected vbuffer: WebGLBuffer;
+    protected wvbuffer: WebGLBuffer;
+    protected nbuffer: WebGLBuffer;
+    protected wnbuffer: WebGLBuffer;
+
+    protected program: Program;
+
+    protected uMMatrix: BABYLON.Matrix;
+    protected uNormalMatrix: BABYLON.Matrix;
+
+    constructor(geometry = new Geometry()) {
         this.matricesNeedUpdate = true
-        this.buffersNeedUpdate = false
-        this.vertexNormalsComputed = false
-        this.vertices = []
-        this.faces = []
+        this.buffersNeedUpdate = true
+        this.geometry = geometry
         this.color = new BABYLON.Vector4(0, 0, 0, 1)
         this.pos = BABYLON.Vector3.Zero()
         this.rot = BABYLON.Vector3.Zero()
         this.scl = new BABYLON.Vector3(1, 1, 1)
     }
 
-    addVertex(pos: BABYLON.Vector3, normal = BABYLON.Vector3.Zero()) {
-        this.vertices.push({ pos, normal })
-    }
-
-    addFace(v1: number, v2: number, v3: number, normal?: BABYLON.Vector3) {
-        let edge1 = this.vertices[v2].pos.subtract(this.vertices[v1].pos)
-        let edge2 = this.vertices[v3].pos.subtract(this.vertices[v1].pos)
-
-        if (normal === undefined)
-            normal = BABYLON.Vector3.Normalize(BABYLON.Vector3.Cross(edge1, edge2))
-
-        this.faces.push({
-            v1: this.vertices[v1],
-            v2: this.vertices[v2],
-            v3: this.vertices[v3],
-            normal: normal
-        })
-    }
-
     addShaders(vertexShader: string, fragmentShader: string) {
         this.program = new Program(vertexShader, fragmentShader)
-    }
-
-    setNormal(idx: number, normal: BABYLON.Vector3) {
-        this.vertices[idx].normal = normal
     }
 
     translate(v1: number | BABYLON.Vector3, v2 = 0, v3 = 0) {
@@ -173,25 +147,12 @@ export default class Mesh {
     }
 
     computeVertexNormals() {
-        let computed: Vertex[] = [];
-        this.vertices.forEach(vertex => {
-            let found;
-            if ((found = computed.find(elem => elem.pos.equals(vertex.pos))) != undefined) {
-                vertex.normal = found.normal
-                return;
-            }
-            let faces = this.faces.filter((face) => face.v1.pos.equals(vertex.pos) || face.v2.pos.equals(vertex.pos) || face.v3.pos.equals(vertex.pos))
-            let avg = BABYLON.Vector3.Zero()
-            faces.forEach(face => avg.addInPlace(face.normal))
-            vertex.normal = avg.normalize()
-            computed.push({ pos: vertex.pos, normal: vertex.normal })
-        })
-        this.vertexNormalsComputed = true
+        this.geometry.computeVertexNormals()
         this.buffersNeedUpdate = true
     }
 
     genBuffers() {
-        let size = this.faces.length * 3 * 3;
+        let size = this.geometry.faces.length * 3 * 3;
         let varray: number[] = []
         let narray: number[] = []
         let wvarray: number[] = []
@@ -200,12 +161,12 @@ export default class Mesh {
         gl.deleteBuffer(this.vbuffer)
         gl.deleteBuffer(this.nbuffer)
 
-        this.faces.forEach((face, idx) => {
+        this.geometry.faces.forEach((face, idx) => {
             let faces = [[...face.v1.pos.asArray()], [...face.v2.pos.asArray()], [...face.v3.pos.asArray()]]
             let normal = [...face.normal.asArray()]
             let normals: number[][]
 
-            if (this.vertexNormalsComputed)
+            if (this.geometry.vertexNormalsComputed)
                 normals = [[...face.v1.normal.asArray()], [...face.v2.normal.asArray()], [...face.v3.normal.asArray()]]
             else
                 normals = [normal, normal, normal]
@@ -255,7 +216,7 @@ export default class Mesh {
         this.buffersNeedUpdate = false
     }
 
-    display(mode: number, uVMatrix: BABYLON.Matrix, uPMatrix: BABYLON.Matrix, uVInvMatrix: BABYLON.Matrix, pointLights: PointLight[], ambientLight: AmbientLight) {
+    display(mode: number, uVMatrix: BABYLON.Matrix, uPMatrix: BABYLON.Matrix, uVInvMatrix: BABYLON.Matrix, pointLights: PointLight[], spotLights: SpotLight[], ambientLight: AmbientLight) {
         if (this.matricesNeedUpdate)
             this.updateMatrices()
         if (this.buffersNeedUpdate)
@@ -277,6 +238,7 @@ export default class Mesh {
         this.program.setUniform("uMMatrix", this.uMMatrix)
         this.program.setUniform("uVMatrix", uVMatrix)
         this.program.setUniform("uPMatrix", uPMatrix)
+
         this.program.setUniform("uVInvMatrix", uVInvMatrix)
 
         this.program.setUniform("uALight.color", ambientLight.color)
@@ -294,7 +256,7 @@ export default class Mesh {
         this.program.setUniform("specular", this.specular)
         this.program.setUniform("shininess", this.shininess)
 
-        gl.drawArrays(mode, 0, ((mode == gl.LINES) ? 2 : 1) * this.faces.length * 3)
+        gl.drawArrays(mode, 0, ((mode == gl.LINES) ? 2 : 1) * this.geometry.faces.length * 3)
 
         gl.disableVertexAttribArray(1)
         gl.disableVertexAttribArray(0)
@@ -313,12 +275,12 @@ export default class Mesh {
         file.split("\n").forEach(line => {
             let tab = line.replace(/\s+/g, " ").trim().split(" ")
             if (tab[0] == "v")
-                mesh.addVertex(new BABYLON.Vector3(parseFloat(tab[1]), parseFloat(tab[2]), parseFloat(tab[3])))
+                mesh.geometry.addVertex(new BABYLON.Vector3(parseFloat(tab[1]), parseFloat(tab[2]), parseFloat(tab[3])))
             else if (tab[0] == "f")
                 fList.push({ v1: parseInt(tab[1]) - 1, v2: parseInt(tab[2]) - 1, v3: parseInt(tab[3]) - 1 })
         })
 
-        fList.forEach(face => mesh.addFace(face.v1, face.v2, face.v3))
+        fList.forEach(face => mesh.geometry.addFace(face.v1, face.v2, face.v3))
 
         mesh.genBuffers()
 
