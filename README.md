@@ -29,20 +29,28 @@ npm run build
 - OBJ model parsing
 - Mesh transformations
 - Wireframe
-- Vertex normals computing
 - Shader loading
+
+### Geometries
+
+- Primitive geometries: Plane, Sphere, Torus
+- Custom arbitrary geometries
+- Vertex normals computing
+
+### Helpers
+
+- PointLight Helper
 
 ### Scene and camera
 
 - Camera transformations
-- Dynamic look-at tracking (Partial support, WIP)
+- Dynamic look-at tracking
 
 ## Things I want to do and have yet to do
 
 - Spotlights
 - Scene raycaster
-- Abritrary geometries
-- Primitive geometries (Sphere, Box, Cylinder, Cone, Torus, Torus-Knot)
-- Helpers (Light helpers, camera helpers, etc...)
+- More primitive geometries (Box, Cylinder, Cone, Torus-Knot, etc...)
+- Mores helpers (Light helpers, camera helpers, geometry helpers, etc...)
 - 3D Anaglyph
 - Physics engine

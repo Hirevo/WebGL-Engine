@@ -1,8 +1,8 @@
 
-let webpack = require("webpack")
-let uglify = require("uglifyjs-webpack-plugin")
+var webpack = require("webpack")
+var Uglify = require("uglifyjs-webpack-plugin")
 
-let conf = {
+var conf = {
     entry: "./dist/index.js",
     output: {
         filename: "./dist/build.js"
@@ -13,7 +13,7 @@ let conf = {
 }
 
 if (process.env.NODE_ENV == 'production')
-    conf.plugins.push(new uglify())
+    conf.plugins.push(new Uglify())
 
 module.exports = conf
 
