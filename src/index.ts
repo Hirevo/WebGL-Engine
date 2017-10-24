@@ -1,4 +1,3 @@
-import * as BABYLON from "babylonjs"
 import Scene from "./engine/Scene"
 import Mesh from "./engine/Mesh"
 import XHR from "./request"
@@ -7,12 +6,13 @@ import SphereGeometry from "./engine/geometries/SphereGeometry";
 import { map } from "./engine/utils";
 import PlaneGeometry from "./engine/geometries/PlaneGeometry";
 import TorusGeometry from "./engine/geometries/TorusGeometry";
+import SpotLightHelper from "./engine/helpers/SpotLightHelper";
 
 let canvas = document.getElementById("draw") as HTMLCanvasElement;
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
-export let gl = canvas.getContext("webgl") as WebGLRenderingContext;
+let gl = canvas.getContext("webgl") as WebGLRenderingContext;
 if (gl == null)
     throw "WebGL not supported !"
 
@@ -21,9 +21,6 @@ export default gl
 gl.clearDepth(1);
 gl.depthFunc(gl.LEQUAL);
 gl.enable(gl.DEPTH_TEST);
-// gl.frontFace(gl.CCW);
-// gl.enable(gl.CULL_FACE);
-// gl.cullFace(gl.BACK);
 gl.clearColor(0, 0, 0, 1);
 
 let scene = new Scene()
@@ -111,30 +108,32 @@ mesh.sphere.translateX(-100)
 mesh.sphere.translateY(150)
 scene.addMesh(mesh.sphere)
 
-scene.addPointLight(new BABYLON.Vector3(100, 20, 20), new BABYLON.Vector4(1, 1, 1, 1))
-scene.addPointLight(new BABYLON.Vector3(-60, 100, 20), new BABYLON.Vector4(1, 1, 1, 1))
-// let helper = new PointLightHelper(scene.getPointLight(0));
-// scene.addMesh(new PointLightHelper(scene.getPointLight(0)))
-scene.addMesh(new PointLightHelper(scene.getPointLight(1)))
-// scene.lookAt(scene.getPointLight(0).pos)
-// scene.lookAt(helper.pos)
-scene.lookAt(mesh.sphere.pos)
-// scene.lookAt(BABYLON.Vector3.Zero())
-// scene.addAmbientLight(new BABYLON.Vector4(1, 1, 1, 1.0))
+let light1 = scene.addPointLight(new BABYLON.Vector3(100, 20, 20), new BABYLON.Vector4(39 / 255, 174 / 255, 96 / 255, 1))
+let light2 = scene.addPointLight(new BABYLON.Vector3(-60, 100, 20), new BABYLON.Vector4(231 / 255, 76 / 255, 60 / 255, 1))
+let spotlight = scene.addSpotLight(new BABYLON.Vector3(400, 400, 400), new BABYLON.Vector3(400, 400, 400), 30, new BABYLON.Vector4(1, 1, 1, 1), 100)
 
-let light1 = scene.getPointLight(0)
-let light2 = scene.getPointLight(1)
-let pos1 = 0, pos1Inc = 0.01
-let pos2 = 0, pos2Inc = 0.01
+spotlight.lookAt(BABYLON.Vector3.Zero())
 
-scene.removePointLight(0)
+let light1Helper = scene.addMesh(new PointLightHelper(light1))
+let light2Helper = scene.addMesh(new PointLightHelper(light2))
+let spotlightHelper = scene.addMesh(new PointLightHelper(spotlight))
+
+scene.lookAt(BABYLON.Vector3.Zero())
+
+// scene.addAmbientLight(new BABYLON.Vector4(.1, .1, .1, 1))
+
+let pos1 = 0, pos1Inc = 0.01;
+let pos2 = 0, pos2Inc = 0.01;
+let pos3 = 0, pos3Inc = -0.005;
 
 setInterval(() => {
-    light1.pos.x = Math.cos(pos1) * 50
-    light2.pos.x = Math.cos(pos2) * 50
-    light1.pos.y = Math.sin(pos1) * 50
-    light2.pos.z = Math.sin(pos2) * 50
-    // light.pos.y = Math.sin(pos) * 50
+    light1.pos.x = Math.cos(pos1) * 50;
+    light1.pos.y = Math.sin(pos1) * 50;
+    light2.pos.x = Math.cos(pos2) * 50;
+    light2.pos.z = Math.sin(pos2) * 50;
+    spotlight.pos.x = Math.cos(pos3) * 400;
+    spotlight.pos.z = Math.sin(pos3) * 400;
+    spotlight.lookAt(BABYLON.Vector3.Zero())
     if (pos1 >= Math.PI)
         pos1Inc = -0.01
     else if (pos1 <= 0)
@@ -143,6 +142,9 @@ setInterval(() => {
     if (pos2 >= 2 * Math.PI)
         pos2 = 0
     pos2 += pos2Inc
+    if (pos3 >= 2 * Math.PI)
+        pos3 = 0
+    pos3 += pos3Inc
     scene.getMesh(3).rotateY(0.01)
     scene.getMesh(4).rotate(0.01, 0.01, 0.01)
     mesh.sphere.rotate(0.01, 0.01, 0.01)
@@ -152,20 +154,16 @@ console.log(scene)
 
 let drag = false
 let last = { x: 0, y: 0 }
-let modes = [gl.TRIANGLES, gl.LINES, gl.POINTS]
-let mode = 0
 let moveMode = 0
 let val = 0
-let distance = 200
 let rotate = false
 
-document.addEventListener("mousedown", ev => {
-    // drag = true
-    // last.x = ev.pageX
-    // last.y = ev.pageY
-    // moveMode = ev.button
-    ev.preventDefault()
-})
+let controls = {
+    modes: [gl.TRIANGLES, gl.LINES, gl.POINTS],
+    mode: 0,
+    distance: 200
+}
+
 document.addEventListener("contextmenu", ev => ev.preventDefault())
 // document.addEventListener("mouseup", () => drag = false)
 // document.addEventListener("mousemove", ev => {
@@ -181,11 +179,10 @@ document.addEventListener("contextmenu", ev => ev.preventDefault())
 //     last.x = ev.pageX;
 //     last.y = ev.pageY;
 // })
-document.addEventListener("mousewheel", ev => distance -= (ev.deltaY > 0) ? -10 : 10)
-document.addEventListener("touchend", () => rotate = !rotate)
+document.addEventListener("mousewheel", ev => controls.distance -= (ev.deltaY > 0) ? -10 : 10)
 document.addEventListener("keypress", ev => {
     if (ev.key == "w")
-        mode = (mode + 1) % 3;
+        controls.mode = (controls.mode + 1) % 3;
     else if (ev.key == "e")
         rotate = !rotate
 })
@@ -193,16 +190,34 @@ document.addEventListener("keypress", ev => {
 function display() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-    scene.pos.x = Math.cos(val) * distance
-    scene.pos.z = Math.sin(val) * distance
-    scene.pos.y = distance
+    scene.pos.x = Math.cos(val) * controls.distance
+    scene.pos.z = Math.sin(val) * controls.distance
+    scene.pos.y = controls.distance
     scene.updateView()
-    scene.render(modes[mode])
+    scene.render(controls.modes[controls.mode])
 
     if (rotate)
         val = (val + 0.02) % (Math.PI * 2);
 
     requestAnimationFrame(display)
 }
+
+let gui = new dat.GUI({
+    autoPlace: true,
+    name: "Scene control"
+})
+
+let folder = gui.addFolder("Scene")
+folder.add(controls, "distance", 0, 750)
+folder.add(controls, "mode", { "Standard": 0, "Wireframe": 1, "Points": 2 })
+
+folder = gui.addFolder("Spotlight")
+folder.add(spotlight, "intensity", 0, 700)
+folder.add(spotlightHelper, "visible")
+folder = folder.addFolder("Color")
+folder.add(spotlight.color, "x", 0, 1)
+folder.add(spotlight.color, "y", 0, 1)
+folder.add(spotlight.color, "z", 0, 1)
+folder.add(spotlight.color, "w", 0, 1)
 
 display()

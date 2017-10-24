@@ -1,4 +1,3 @@
-import * as BABYLON from "babylonjs"
 import gl from "./../index"
 
 export interface Vertex {

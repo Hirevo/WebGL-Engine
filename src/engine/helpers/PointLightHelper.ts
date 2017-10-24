@@ -1,11 +1,12 @@
-import * as BABYLON from "babylonjs"
 import Mesh from "../Mesh"
 import { PointLight, SpotLight, AmbientLight } from "../Scene";
 import { XHR } from "../../request";
-import { gl } from "../../index";
+import gl from "../../index";
 import SphereGeometry from "../geometries/SphereGeometry";
 
 export default class PointLightHelper extends Mesh {
+
+    private currentPos: BABYLON.Vector3;
 
     constructor(light: PointLight) {
         super()
@@ -27,6 +28,7 @@ export default class PointLightHelper extends Mesh {
         this.geometry.addFace(1, 3, 5)
 
         this.pos = light.pos
+        this.currentPos = this.pos.clone()
         this.setColor(light.color)
         this.genBuffers()
         let vertexShader = XHR.sync("shaders/helpers/pointLightHelper/vert.vs")
@@ -37,8 +39,10 @@ export default class PointLightHelper extends Mesh {
     }
 
     display(mode: number, uVMatrix: BABYLON.Matrix, uPMatrix: BABYLON.Matrix, uVInvMatrix: BABYLON.Matrix, pointLights: PointLight[], spotLights: SpotLight[], ambientLight: AmbientLight) {
-        // if (this.matricesNeedUpdate)
+        if (!this.currentPos.equals(this.pos)) {
+            this.currentPos = this.pos.clone()
             this.updateMatrices()
+        }
         if (this.buffersNeedUpdate)
             this.genBuffers()
 

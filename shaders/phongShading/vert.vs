@@ -1,17 +1,19 @@
 
-attribute highp vec3    aPosition;
-attribute highp vec3    aNormal;
+precision mediump   float;
+precision mediump   int;
 
-uniform highp mat4      uMMatrix;
-uniform highp mat4      uVMatrix;
-uniform highp mat4      uPMatrix;
+attribute vec3      aPosition;
+attribute vec3      aNormal;
 
-uniform highp mat4      uNormalMatrix;
+uniform mat4        uMMatrix;
+uniform mat4        uVMatrix;
+uniform mat4        uPMatrix;
 
-varying highp vec4      lighting;
-varying highp vec4      normal;
-varying highp vec4      mPos;
-varying highp vec4      mvPos;
+uniform mat4        uNormalMatrix;
+
+varying vec4        normal;
+varying vec4        mPos;
+varying vec4        mvPos;
 
 void main() {
     mPos = uMMatrix * vec4(aPosition, 1.0);

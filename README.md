@@ -9,9 +9,8 @@ Try out the demo scene [HERE](https://hirevo.github.io/WebGL-Engine) !
 
 You can clone the project and build it locally like this:  
 ```
-npm run build
+npm run build-prod
 ```
-
 
 ## Features
 
@@ -19,9 +18,10 @@ npm run build
 
 - Diffuse lighting
 - Specular lighting
-- Ambient lighting
 - Multiple point lights (Up to 20)
+- Multiple spot lights (Up to 20)
 - Ambient light
+- Intensity attenuation
 
 ### Meshes
 
@@ -48,7 +48,7 @@ npm run build
 
 ## Things I want to do and have yet to do
 
-- Spotlights
+- Shadow mapping
 - Scene raycaster
 - More primitive geometries (Box, Cylinder, Cone, Torus-Knot, etc...)
 - Mores helpers (Light helpers, camera helpers, geometry helpers, etc...)

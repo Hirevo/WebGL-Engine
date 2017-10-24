@@ -1,4 +1,3 @@
-import * as BABYLON from "babylonjs"
 import { Vertex, Face, Program } from "./utils"
 import XHR from "./../request"
 import gl from "./../index"
@@ -10,6 +9,7 @@ export default class Mesh {
     specular = 0;
     shininess = 1;
     diffuse = 1;
+    visible = true;
 
     color: BABYLON.Vector4;
     pos: BABYLON.Vector3;
@@ -160,6 +160,8 @@ export default class Mesh {
 
         gl.deleteBuffer(this.vbuffer)
         gl.deleteBuffer(this.nbuffer)
+        gl.deleteBuffer(this.wvbuffer)
+        gl.deleteBuffer(this.wnbuffer)
 
         this.geometry.faces.forEach((face, idx) => {
             let faces = [[...face.v1.pos.asArray()], [...face.v2.pos.asArray()], [...face.v3.pos.asArray()]]
@@ -217,6 +219,8 @@ export default class Mesh {
     }
 
     display(mode: number, uVMatrix: BABYLON.Matrix, uPMatrix: BABYLON.Matrix, uVInvMatrix: BABYLON.Matrix, pointLights: PointLight[], spotLights: SpotLight[], ambientLight: AmbientLight) {
+        if (!this.visible)
+            return ;
         if (this.matricesNeedUpdate)
             this.updateMatrices()
         if (this.buffersNeedUpdate)
@@ -247,6 +251,16 @@ export default class Mesh {
         pointLights.forEach((light, idx) => {
             this.program.setUniform(`uPLights[${idx}].pos`, light.pos)
             this.program.setUniform(`uPLights[${idx}].color`, light.color)
+            this.program.setUniform(`uPLights[${idx}].intensity`, light.intensity)
+        })
+
+        this.program.setUniform("uNbSLights", spotLights.length)
+        spotLights.forEach((light, idx) => {
+            this.program.setUniform(`uSLights[${idx}].pos`, light.pos)
+            this.program.setUniform(`uSLights[${idx}].dir`, light.dir)
+            this.program.setUniform(`uSLights[${idx}].aper`, light.aperture)
+            this.program.setUniform(`uSLights[${idx}].color`, light.color)
+            this.program.setUniform(`uSLights[${idx}].intensity`, light.intensity)
         })
 
         this.program.setUniform("uNormalMatrix", this.uNormalMatrix)

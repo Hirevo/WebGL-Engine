@@ -1,4 +1,3 @@
-import * as BABYLON from "babylonjs"
 import Geometry from "../Geometry"
 
 export default class TorusKnotGeometry extends Geometry {

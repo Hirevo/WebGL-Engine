@@ -4,7 +4,8 @@
   "description": "A little WebGL rendering engine. :D",
   "main": "dist/index.js",
   "scripts": {
-    "build": "bash -c 'tsc && NODE_ENV=production webpack'"
+    "build-prod": "bash -c 'tsc ; NODE_ENV=production rollup -c'",
+    "build-dev": "bash -c 'tsc ; NODE_ENV=development rollup -c'"
   },
   "keywords": [
     "WebGL",
@@ -17,12 +18,10 @@
   "author": "Hirevo",
   "license": "ISC",
   "dependencies": {
-    "babylonjs": "^3.1.0-alpha1",
+    "rollup": "^0.50.0",
+    "rollup-plugin-uglify": "^2.0.1",
     "typescript": "^2.5.3",
-    "webpack": "^3.6.0"
+    "uglify-es": "^3.1.5"
   },
-  "devDependencies": {
-    "@types/babylonjs": "^2.4.1",
-    "uglifyjs-webpack-plugin": "^1.0.0-beta.3"
-  }
+  "devDependencies": {}
 }

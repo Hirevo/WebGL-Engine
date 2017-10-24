@@ -1,4 +1,3 @@
-import * as BABYLON from "babylonjs"
 import { Vertex, Face } from "./utils";
 
 export default class Geometry {

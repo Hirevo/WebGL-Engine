@@ -1,9 +1,12 @@
 
-attribute highp vec3    aPosition;
+precision mediump   float;
+precision mediump   int;
 
-uniform highp mat4      uMMatrix;
-uniform highp mat4      uVMatrix;
-uniform highp mat4      uPMatrix;
+attribute vec3      aPosition;
+
+uniform mat4        uMMatrix;
+uniform mat4        uVMatrix;
+uniform mat4        uPMatrix;
 
 void main() {
     gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aPosition, 1);
