@@ -1,6 +1,6 @@
-import Geometry from "../Geometry"
+import { Geometry } from "../Geometry"
 
-export default class TorusGeometry extends Geometry {
+export class TorusGeometry extends Geometry {
     constructor(largeRadius: number, smallRadius: number, resolution: number) {
         super()
 
@@ -18,7 +18,7 @@ export default class TorusGeometry extends Geometry {
                 tmp.push({ lon, lat, pos: new BABYLON.Vector3(x, y, z) })
             }
         }
-        
+
         let vertexCount = 0
         for (let x = 0; x < grid.length; x++)
             for (let y = 0; y < grid[x].length; y++)

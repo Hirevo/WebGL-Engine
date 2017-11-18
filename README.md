@@ -36,12 +36,27 @@ npm run build-prod
 - Primitive geometries: Plane, Sphere, Torus
 - Custom arbitrary geometries
 - Vertex normals computing
+- Per-Renderer caching and updates
+
+### Materials
+
+- Primitive materials: Basic, Phong
+- Custom arbitrary materials
+- Per-Renderer caching and updates
 
 ### Helpers
 
 - PointLight Helper
 
-### Scene and camera
+### Renderer
+
+- WebGLRenderer
+
+### Scene
+
+- Renderer-agnostic
+
+### Camera
 
 - Camera transformations
 - Dynamic look-at tracking

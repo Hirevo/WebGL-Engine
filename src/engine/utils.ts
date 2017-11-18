@@ -1,4 +1,4 @@
-import gl from "./../index"
+import { Renderer } from "./Renderer";
 
 export interface Vertex {
     pos: BABYLON.Vector3;
@@ -12,80 +12,89 @@ export interface Face {
     normal: BABYLON.Vector3;
 }
 
+interface Locations {
+    [name: string]: WebGLUniformLocation;
+}
+
 export class Program {
 
     handle: WebGLProgram;
+    locations: Locations;
 
-    constructor(vertexShader: string, fragmentShader: string) {
-        let handle = gl.createProgram();
+    constructor(renderer: Renderer, vertexShader: string, fragmentShader: string) {
+        this.locations = {};
+        let handle = renderer.gl.createProgram();
         if (handle === null)
             throw "Can't create program"
         this.handle = handle;
 
-        let vHandle = gl.createShader(gl.VERTEX_SHADER);
+        let vHandle = renderer.gl.createShader(renderer.gl.VERTEX_SHADER);
         if (vHandle === null)
             throw "Can't create vertex shader"
 
-        let fHandle = gl.createShader(gl.FRAGMENT_SHADER);
+        let fHandle = renderer.gl.createShader(renderer.gl.FRAGMENT_SHADER);
         if (fHandle === null)
             throw "Can't create fragment shader"
 
-        gl.shaderSource(vHandle, vertexShader);
-        gl.shaderSource(fHandle, fragmentShader);
+        renderer.gl.shaderSource(vHandle, vertexShader);
+        renderer.gl.shaderSource(fHandle, fragmentShader);
 
-        gl.compileShader(vHandle);
-        if (gl.getShaderParameter(vHandle, gl.COMPILE_STATUS) == false)
-            throw gl.getShaderInfoLog(vHandle);
+        renderer.gl.compileShader(vHandle);
+        if (renderer.gl.getShaderParameter(vHandle, renderer.gl.COMPILE_STATUS) == false)
+            throw renderer.gl.getShaderInfoLog(vHandle);
 
-        gl.compileShader(fHandle);
-        if (gl.getShaderParameter(fHandle, gl.COMPILE_STATUS) == false)
-            throw gl.getShaderInfoLog(fHandle);
+        renderer.gl.compileShader(fHandle);
+        if (renderer.gl.getShaderParameter(fHandle, renderer.gl.COMPILE_STATUS) == false)
+            throw renderer.gl.getShaderInfoLog(fHandle);
 
-        gl.attachShader(this.handle, vHandle);
-        gl.attachShader(this.handle, fHandle);
+        renderer.gl.attachShader(this.handle, vHandle);
+        renderer.gl.attachShader(this.handle, fHandle);
 
-        gl.bindAttribLocation(this.handle, 0, "aPosition")
-        gl.bindAttribLocation(this.handle, 1, "aNormal")
+        renderer.gl.bindAttribLocation(this.handle, 0, "aPosition")
+        renderer.gl.bindAttribLocation(this.handle, 1, "aNormal")
 
-        gl.linkProgram(this.handle);
-        if (gl.getProgramParameter(this.handle, gl.LINK_STATUS) == false)
-            throw gl.getProgramInfoLog(this.handle);
+        renderer.gl.linkProgram(this.handle);
+        if (renderer.gl.getProgramParameter(this.handle, renderer.gl.LINK_STATUS) == false)
+            throw renderer.gl.getProgramInfoLog(this.handle);
 
-        gl.validateProgram(this.handle);
-        if (gl.getProgramParameter(this.handle, gl.VALIDATE_STATUS) == false)
-            throw gl.getProgramInfoLog(this.handle);
+        renderer.gl.validateProgram(this.handle);
+        if (renderer.gl.getProgramParameter(this.handle, renderer.gl.VALIDATE_STATUS) == false)
+            throw renderer.gl.getProgramInfoLog(this.handle);
 
-        gl.deleteShader(vHandle);
-        gl.deleteShader(fHandle);
+        renderer.gl.deleteShader(vHandle);
+        renderer.gl.deleteShader(fHandle);
     }
 
-    bind() {
-        gl.useProgram(this.handle);
+    bind(renderer: Renderer) {
+        renderer.gl.useProgram(this.handle);
     }
 
-    unbind() {
-        gl.useProgram(null);
+    unbind(renderer: Renderer) {
+        renderer.gl.useProgram(null);
     }
 
-    setUniform(name: string, content: number | BABYLON.Vector2 | BABYLON.Vector3 | BABYLON.Vector4 | BABYLON.Color4 | BABYLON.Matrix) {
-        let location = gl.getUniformLocation(this.handle, name);
-        if (location === null) {
-            console.error(`'${name}' uniform variable was not found !`);
-            return;
+    setUniform(renderer: Renderer, name: string, content: number | BABYLON.Vector2 | BABYLON.Vector3 | BABYLON.Vector4 | BABYLON.Color4 | BABYLON.Matrix) {
+        if (this.locations[name] === undefined) {
+            let location = renderer.gl.getUniformLocation(this.handle, name);
+            if (location === null) {
+                console.error(`'${name}' uniform variable was not found !`);
+                return;
+            }
+            this.locations[name] = location;
         }
 
         if (typeof (content) == "number")
-            gl.uniform1f(location, content);
+            renderer.gl.uniform1f(this.locations[name], content);
         else if (content instanceof BABYLON.Vector2)
-            gl.uniform2fv(location, content.asArray())
+            renderer.gl.uniform2fv(this.locations[name], content.asArray())
         else if (content instanceof BABYLON.Vector4)
-            gl.uniform4fv(location, content.asArray())
+            renderer.gl.uniform4fv(this.locations[name], content.asArray())
         else if (content instanceof BABYLON.Vector3)
-            gl.uniform3fv(location, content.asArray())
+            renderer.gl.uniform3fv(this.locations[name], content.asArray())
         else if (content instanceof BABYLON.Color4)
-            gl.uniform4fv(location, content.asArray())
+            renderer.gl.uniform4fv(this.locations[name], content.asArray())
         else if (content instanceof BABYLON.Matrix)
-            gl.uniformMatrix4fv(location, false, content.asArray())
+            renderer.gl.uniformMatrix4fv(this.locations[name], false, content.asArray())
     }
 }
 

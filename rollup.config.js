@@ -1,16 +1,25 @@
 
 import uglify from 'rollup-plugin-uglify';
-import { minify } from 'uglify-es'
+import { minify } from 'uglify-es';
 
 let config = {
-    input: 'dist/index.js',
+    input: process.env.INPUT,
     output: {
-        file: 'dist/build.js',
+        file: process.env.OUTPUT,
         format: 'iife'
     },
     name: 'engine',
     globals: { babylonjs: 'BABYLON' },
-    external: [ 'babylonjs' ],
+    onwarn(warning) {
+        // Suppress known error message caused by TypeScript compiled code with Rollup
+        // https://github.com/rollup/rollup/wiki/Troubleshooting#this-is-undefined
+        if (warning.code === 'THIS_IS_UNDEFINED') {
+            return;
+        }
+        console.log("Rollup warning: ", message);
+        console.log("Rollup warning: ", warning.message);
+    },
+    external: ['babylonjs'],
     plugins: []
 };
 
@@ -18,3 +27,4 @@ if (process.env.NODE_ENV == 'production')
     config.plugins.push(uglify(undefined, minify))
 
 export default config;
+

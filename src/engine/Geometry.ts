@@ -1,9 +1,10 @@
 import { Vertex, Face } from "./utils";
 
-export default class Geometry {
+export class Geometry {
+
     vertices: Vertex[];
     faces: Face[];
-    vertexNormalsComputed: boolean
+    vertexNormalsComputed: boolean;
 
     constructor() {
         this.vertices = []
@@ -11,8 +12,11 @@ export default class Geometry {
         this.vertexNormalsComputed = false
     }
 
-    addVertex(pos: BABYLON.Vector3, normal = BABYLON.Vector3.Zero()) {
-        this.vertices.push({ pos, normal })
+    addVertex(pos: BABYLON.Vector3, normal = BABYLON.Vector3.Zero(), texCoords = BABYLON.Vector2.Zero()) {
+        let vertex = { pos, normal, texCoords }
+
+        this.vertices.push(vertex)
+        return vertex;
     }
 
     getVertex(idx: number) {
@@ -26,12 +30,15 @@ export default class Geometry {
         if (normal === undefined)
             normal = BABYLON.Vector3.Normalize(BABYLON.Vector3.Cross(edge1, edge2))
 
-        this.faces.push({
+        let face = {
             v1: this.vertices[v1],
             v2: this.vertices[v2],
             v3: this.vertices[v3],
             normal: normal
-        })
+        }
+
+        this.faces.push(face)
+        return face
     }
 
     getFace(idx: number) {

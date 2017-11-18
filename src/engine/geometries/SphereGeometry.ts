@@ -1,19 +1,19 @@
-import Geometry from "../Geometry";
+import { Geometry } from "../Geometry";
 
-export default class SphereGeometry extends Geometry {
-    constructor(resolution: number) {
+export class SphereGeometry extends Geometry {
+    constructor(radius: number, resolution = 20) {
         super()
         let div = (2 * Math.PI) / resolution
         let grid: BABYLON.Vector3[][] = []
         let pi = Math.PI
         let half_pi = pi / 2
         for (let lon = -pi, i = 0; lon <= (pi + div); lon += div, i++) {
-            let tmp: BABYLON.Vector3[] = []
-            grid.push(tmp)
+            let tmp: BABYLON.Vector3[] = [];
+            grid.push(tmp);
             for (let lat = -half_pi, j = 0; lat <= (half_pi + div); lat += div, j++) {
-                let x = 2 * Math.sin(lon) * Math.cos(lat)
-                let y = 2 * Math.sin(lon) * Math.sin(lat)
-                let z = 2 * Math.cos(lon)
+                let x = radius * Math.sin(lon) * Math.cos(lat);
+                let y = radius * Math.sin(lon) * Math.sin(lat);
+                let z = radius * Math.cos(lon);
                 tmp.push(new BABYLON.Vector3(x, y, z));
             }
         }

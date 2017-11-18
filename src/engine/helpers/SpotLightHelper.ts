@@ -1,18 +1,18 @@
-import Mesh from "../Mesh"
+import { Mesh } from "../Mesh"
 import { PointLight, SpotLight, AmbientLight } from "../Scene";
-import { XHR } from "../../request";
-import gl from "../../index";
-import SphereGeometry from "../geometries/SphereGeometry";
+import { SphereGeometry } from "../geometries/SphereGeometry";
 import { Vertex } from "../utils";
-import Geometry from "../Geometry";
+import { Geometry } from "../Geometry";
+import { BasicMaterial } from "../materials/BaseMaterial";
+import { Renderer } from "../Renderer";
 
-export default class SpotLightHelper extends Mesh {
+export class SpotLightHelper extends Mesh {
 
     private tip: Vertex;
     private light: SpotLight;
 
     constructor(light: SpotLight) {
-        super()
+        super(undefined, new BasicMaterial(light.color))
 
         this.light = light
 
@@ -23,24 +23,19 @@ export default class SpotLightHelper extends Mesh {
         this.geometry.addFace(0, 1, 0)
 
         this.pos = light.pos
-        this.setColor(light.color)
-        this.genBuffers()
-        let vertexShader = XHR.sync("shaders/helpers/pointLightHelper/vert.vs")
-        let fragmentShader = XHR.sync("shaders/helpers/pointLightHelper/frag.fs")
-        if (vertexShader === undefined || fragmentShader === undefined)
-            throw "LoadingError"
-        this.addShaders(vertexShader, fragmentShader)
     }
 
-    genBuffers() {
+    genBuffers(renderer: Renderer) {
         let size = this.geometry.faces.length * 3 * 3;
         let wvarray: number[] = []
         let wnarray: number[] = []
 
-        gl.deleteBuffer(this.vbuffer)
-        gl.deleteBuffer(this.nbuffer)
-        gl.deleteBuffer(this.wvbuffer)
-        gl.deleteBuffer(this.wnbuffer)
+        if (this.bufferList[renderer.id] === undefined)
+            this.bufferList[renderer.id] = { materialNeedUpdate: true, geometryNeedUpdate: true } as any;
+        else {
+            renderer.gl.deleteBuffer(this.bufferList[renderer.id].wvbuffer)
+            renderer.gl.deleteBuffer(this.bufferList[renderer.id].wnbuffer)
+        }
 
         this.geometry.faces.forEach((face, idx) => {
             let faces = [[...face.v1.pos.asArray()], [...face.v2.pos.asArray()], [...face.v3.pos.asArray()]]
@@ -56,62 +51,60 @@ export default class SpotLightHelper extends Mesh {
             wnarray.push(...normals[0], ...normals[1], ...normals[1], ...normals[2], ...normals[2], ...normals[0])
         })
 
-        let wvbuffer = gl.createBuffer()
+        let wvbuffer = renderer.gl.createBuffer()
         if (wvbuffer === null)
             throw "Couldn't create buffer"
-        this.wvbuffer = wvbuffer
+        this.bufferList[renderer.id].wvbuffer = wvbuffer
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.wvbuffer)
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(wvarray), gl.STATIC_DRAW)
-        gl.bindBuffer(gl.ARRAY_BUFFER, null)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, this.bufferList[renderer.id].wvbuffer)
+        renderer.gl.bufferData(renderer.gl.ARRAY_BUFFER, new Float32Array(wvarray), renderer.gl.STATIC_DRAW)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null)
 
-        let wnbuffer = gl.createBuffer()
+        let wnbuffer = renderer.gl.createBuffer()
         if (wnbuffer === null)
             throw "Couldn't create buffer"
-        this.wnbuffer = wnbuffer
+        this.bufferList[renderer.id].wnbuffer = wnbuffer
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.wnbuffer)
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(wnarray), gl.STATIC_DRAW)
-        gl.bindBuffer(gl.ARRAY_BUFFER, null)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, this.bufferList[renderer.id].wnbuffer)
+        renderer.gl.bufferData(renderer.gl.ARRAY_BUFFER, new Float32Array(wnarray), renderer.gl.STATIC_DRAW)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null)
 
-        this.buffersNeedUpdate = false
+        this.bufferList[renderer.id].geometryNeedUpdate = false
     }
 
-    display(mode: number, uVMatrix: BABYLON.Matrix, uPMatrix: BABYLON.Matrix, uVInvMatrix: BABYLON.Matrix, pointLights: PointLight[], spotLights: SpotLight[], ambientLight: AmbientLight) {
+    display(renderer: Renderer, uVMatrix: BABYLON.Matrix, uPMatrix: BABYLON.Matrix, uVInvMatrix: BABYLON.Matrix, pointLights: PointLight[], spotLights: SpotLight[], ambientLight: AmbientLight) {
         if (!this.tip.pos.equals(this.light.dir)) {
-            this.buffersNeedUpdate = true;
+            this.requestGeometryUpdate(true);
             this.tip.pos.x = this.light.dir.x;
             this.tip.pos.y = this.light.dir.y;
             this.tip.pos.z = this.light.dir.z;
-            this.updateMatrices()
+            this.updateMatrices();
         }
-        if (this.buffersNeedUpdate)
-            this.genBuffers()
+        if (this.bufferList[renderer.id] === undefined || this.bufferList[renderer.id].geometryNeedUpdate)
+            this.genBuffers(renderer);
+        if (this.bufferList[renderer.id].materialNeedUpdate)
+            this.updateMaterial(renderer);
 
-        this.program.bind()
+        this.material.bind(renderer)
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.wvbuffer)
-        gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0)
-        gl.bindBuffer(gl.ARRAY_BUFFER, null)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, this.bufferList[renderer.id].wvbuffer)
+        renderer.gl.vertexAttribPointer(0, 3, renderer.gl.FLOAT, false, 0, 0)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null)
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.wnbuffer)
-        gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0)
-        gl.bindBuffer(gl.ARRAY_BUFFER, null)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, this.bufferList[renderer.id].wnbuffer)
+        renderer.gl.vertexAttribPointer(1, 3, renderer.gl.FLOAT, false, 0, 0)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null)
 
-        gl.enableVertexAttribArray(0)
-        gl.enableVertexAttribArray(1)
+        renderer.gl.enableVertexAttribArray(0)
+        renderer.gl.enableVertexAttribArray(1)
 
-        this.program.setUniform("uMMatrix", this.uMMatrix)
-        this.program.setUniform("uVMatrix", uVMatrix)
-        this.program.setUniform("uPMatrix", uPMatrix)
+        this.material.setUniforms(renderer, { uMMatrix: this.uMMatrix, uVMatrix, uPMatrix })
 
-        this.program.setUniform("color", this.color)
+        renderer.gl.drawArrays(renderer.gl.LINES, 0, 2 * this.geometry.faces.length * 3)
 
-        gl.drawArrays(gl.LINES, 0, 2 * this.geometry.faces.length * 3)
+        renderer.gl.disableVertexAttribArray(1)
+        renderer.gl.disableVertexAttribArray(0)
 
-        gl.disableVertexAttribArray(1)
-        gl.disableVertexAttribArray(0)
-
-        this.program.unbind()
+        this.material.unbind(renderer)
     }
 }

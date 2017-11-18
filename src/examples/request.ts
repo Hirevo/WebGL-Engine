@@ -15,7 +15,7 @@ export module XHR {
             let xhr = new XMLHttpRequest()
 
             xhr.open("GET", url, true)
-            xhr.onload = response => {
+            xhr.onload = function (resp) {
                 if (xhr.readyState != 4 || xhr.status != 200)
                     reject(xhr.status)
                 else
