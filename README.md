@@ -33,14 +33,14 @@ npm run build-prod
 
 ### Geometries
 
-- Primitive geometries: Plane, Sphere, Torus
+- Primitive geometries: Plane, Box, Sphere, Torus, Torus-Knot
 - Custom arbitrary geometries
 - Vertex normals computing
 - Per-Renderer caching and updates
 
 ### Materials
 
-- Primitive materials: Basic, Phong
+- Primitive materials: Basic, Phong, Normal
 - Custom arbitrary materials
 - Per-Renderer caching and updates
 
@@ -50,7 +50,7 @@ npm run build-prod
 
 ### Renderer
 
-- WebGLRenderer
+- WebGL Renderer
 
 ### Scene
 
@@ -60,12 +60,13 @@ npm run build-prod
 
 - Camera transformations
 - Dynamic look-at tracking
+- Automatic updates on property changes
 
 ## Things I want to do and have yet to do
 
 - Shadow mapping
 - Scene raycaster
-- More primitive geometries (Box, Cylinder, Cone, Torus-Knot, etc...)
+- More primitive geometries (Cylinder, Cone, etc...)
 - Mores helpers (Light helpers, camera helpers, geometry helpers, etc...)
 - 3D Anaglyph
 - Physics engine

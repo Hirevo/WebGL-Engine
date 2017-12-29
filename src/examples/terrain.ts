@@ -1,46 +1,46 @@
 import XHR from "./request"
 import * as Engine from "../engine/Engine"
 
-let renderer = new Engine.Renderer("draw");
+const renderer = new Engine.Renderer("draw");
 
-let camera = new Engine.Camera({ aspectRatio: renderer.canvas.width / renderer.canvas.height, far: 50000 });
+const camera = new Engine.Camera({ aspectRatio: renderer.canvas.width / renderer.canvas.height, far: 50000 });
 
-let scene = new Engine.Scene();
+const scene = new Engine.Scene();
 
-let materials = {
+const materials = {
     plane: new Engine.PhongMaterial({
         diffuse: 1,
         specular: 0.1,
         shininess: 10
     })
-}
+};
 
-let mesh = {
+const mesh = {
     plane: new Engine.Mesh(new Engine.PlaneGeometry(2000, 2000, 50), materials.plane),
-}
+};
 
 if (mesh.plane == undefined)
     throw "LoadingError"
-scene.addMesh(mesh.plane)
+scene.addMesh(mesh.plane);
 
-camera.lookAt(BABYLON.Vector3.Zero())
+camera.lookAt(BABYLON.Vector3.Zero());
 
-scene.addPointLight(new BABYLON.Vector3(0, 1000, 0), undefined, 1000)
+scene.addPointLight(new BABYLON.Vector3(0, 1000, 0), undefined, 1000);
 
-// scene.addAmbientLight(new BABYLON.Vector4(.5, .5, .5, 1))
+// scene.addAmbientLight(new BABYLON.Vector4(.5, .5, .5, 1));
 
-noise.seed(Math.random())
+noise.seed(Math.random());
 
 let xProg = 0;
 let zProg = 0;
-let controls = {
+const controls = {
     distance: 900,
     mode: 0,
     amplitude: 470,
     frequency: 22
 }
 
-let n = setInterval(() => {
+const n = setInterval(() => {
     xProg += 0.00;
     zProg += 0.01;
 
@@ -50,35 +50,34 @@ let n = setInterval(() => {
     mesh.plane.requestGeometryUpdate(true);
 }, 10)
 
-console.log(scene)
+console.log(scene);
 
-let last = { x: 0, y: 0 }
-let moveMode = 0
-let val = 0
-let rotate = false
+const last = { x: 0, y: 0 };
+let moveMode = 0;
+let val = 0;
+let rotate = false;
 
-document.addEventListener("contextmenu", ev => ev.preventDefault())
+document.addEventListener("contextmenu", ev => ev.preventDefault());
 document.addEventListener("mousewheel", ev => {
     controls.distance -= (ev.deltaY > 0) ? -10 : 10;
     camera.pos.x = Math.cos(val) * controls.distance;
     camera.pos.z = Math.sin(val) * controls.distance;
     camera.pos.y = controls.distance;
     camera.matricesNeedUpdate = true;
-})
+});
 document.addEventListener("keypress", ev => {
     if (ev.key == "w")
         renderer.setMode(renderer.getModeIdx() + 1);
     else if (ev.key == "e")
-        rotate = !rotate
-})
+        rotate = !rotate;
+});
 
-camera.pos.x = Math.cos(val) * controls.distance
-camera.pos.z = Math.sin(val) * controls.distance
-camera.pos.y = controls.distance
+camera.pos.x = Math.cos(val) * controls.distance;
+camera.pos.z = Math.sin(val) * controls.distance;
+camera.pos.y = controls.distance;
 camera.matricesNeedUpdate = true;
 
 function display() {
-
     if (rotate) {
         val = (val + 0.02) % (Math.PI * 2);
         camera.pos.x = Math.cos(val) * controls.distance;
@@ -89,27 +88,27 @@ function display() {
 
     renderer.render(scene, camera);
 
-    requestAnimationFrame(display)
+    requestAnimationFrame(display);
 }
 
-let gui = new dat.GUI({
+const gui = new dat.GUI({
     autoPlace: true,
     name: "Scene control"
-})
+});
 
-let folder = gui.addFolder("Scene")
+let folder = gui.addFolder("Scene");
 folder.add(controls, "distance", 0, 4000).listen().onChange(() => {
     camera.pos.x = Math.cos(val) * controls.distance;
     camera.pos.z = Math.sin(val) * controls.distance;
     camera.pos.y = controls.distance;
     camera.matricesNeedUpdate = true;
-})
+});
 
 let modeControl: dat.GUIController;
-modeControl = folder.add(controls, "mode", { "Standard": 0, "Wireframe": 1, "Points": 2 }).listen()
-modeControl.onFinishChange((val: number) => { renderer.setMode(controls.mode); controls.mode = renderer.getModeIdx() })
+modeControl = folder.add(controls, "mode", { "Standard": 0, "Wireframe": 1, "Points": 2 }).listen();
+modeControl.onFinishChange((val: number) => { renderer.setMode(controls.mode); controls.mode = renderer.getModeIdx() });
 
-folder.add(controls, "amplitude").listen()
-folder.add(controls, "frequency").listen()
+folder.add(controls, "amplitude").listen();
+folder.add(controls, "frequency").listen();
 
-display()
+display();

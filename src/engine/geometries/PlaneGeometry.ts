@@ -8,10 +8,10 @@ export class PlaneGeometry extends Geometry {
     constructor(lengthX: number, lengthY = lengthX, res = 2) {
         super();
 
-        let stepX = lengthX / res;
-        let stepY = lengthY / res;
-        let tX = lengthX / 2;
-        let tY = lengthY / 2;
+        const stepX = lengthX / res;
+        const stepY = lengthY / res;
+        const tX = lengthX / 2;
+        const tY = lengthY / 2;
         
         this.grid = [];
         for (let i = 0; i <= res; i++) {
@@ -22,10 +22,10 @@ export class PlaneGeometry extends Geometry {
 
         for (let y = 0; y < (this.grid.length - 1); y++)
             for (let x = 0; x < (this.grid[y].length - 1); x++) {
-                let idx1 = x + y * this.grid[y].length;
-                let idx2 = (x + 1) + y * this.grid[y].length;
-                let idx3 = x + (y + 1) * this.grid[y].length;
-                let idx4 = (x + 1) + (y + 1) * this.grid[y].length;
+                const idx1 = x + y * this.grid[y].length;
+                const idx2 = (x + 1) + y * this.grid[y].length;
+                const idx3 = x + (y + 1) * this.grid[y].length;
+                const idx4 = (x + 1) + (y + 1) * this.grid[y].length;
 
                 this.addFace(idx1, idx2, idx3);
                 this.addFace(idx2, idx3, idx4);

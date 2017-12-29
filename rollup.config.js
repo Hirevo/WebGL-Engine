@@ -16,7 +16,6 @@ let config = {
         if (warning.code === 'THIS_IS_UNDEFINED') {
             return;
         }
-        console.log("Rollup warning: ", message);
         console.log("Rollup warning: ", warning.message);
     },
     external: ['babylonjs'],

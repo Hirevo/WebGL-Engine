@@ -14855,8 +14855,8 @@ declare module BABYLON {
         runTask(scene: Scene, onSuccess: () => void, onError: (message?: string, exception?: any) => void): void;
     }
     interface ITextureAssetTask extends IAssetTask {
-        onSuccess: (task: ITextureAssetTask) => void;
-        onError: (task: ITextureAssetTask) => void;
+        onSuccess: (task: any) => void;
+        onError: (task: any) => void;
         texture: Texture;
     }
     class TextureAssetTask extends AbstractAssetTask implements ITextureAssetTask {

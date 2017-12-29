@@ -38,11 +38,11 @@ export class Material {
     }
 
     setUniforms(renderer: Renderer, options: any) {
-        throw "Method not yet implemented !"
+        throw "Method not yet implemented !";
     }
 
     clone() {
-        return new Material(this.vertexSource, this.fragmentSource)
+        return new Material(this.vertexSource, this.fragmentSource);
     }
 
 }

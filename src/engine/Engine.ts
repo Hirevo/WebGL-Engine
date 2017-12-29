@@ -9,10 +9,13 @@ export * from "./Mesh"
 
 export * from "./materials/PhongMaterial"
 export * from "./materials/BaseMaterial"
+export * from "./materials/NormalMaterial"
 
 export * from "./geometries/PlaneGeometry"
+export * from "./geometries/BoxGeometry"
 export * from "./geometries/SphereGeometry"
 export * from "./geometries/TorusGeometry"
+export * from "./geometries/TorusKnotGeometry"
 
 export * from "./helpers/PointLightHelper"
 export * from "./helpers/SpotLightHelper"
@@ -20,7 +23,7 @@ export * from "./helpers/SpotLightHelper"
 export * from "./utils"
 
 export namespace Constants {
-    export const phongMaterialVertexShader = `\
+    export const phongMaterialVertexShader = `
         precision mediump   float;
         precision mediump   int;
 
@@ -156,5 +159,36 @@ export namespace Constants {
 
         void main() {
             gl_FragColor = color;
+        }`
+    export const normalMaterialVertexShader = `\
+        attribute highp vec3    aPosition;
+        attribute highp vec3    aNormal;
+
+        uniform highp mat4      uMMatrix;
+        uniform highp mat4      uVMatrix;
+        uniform highp mat4      uPMatrix;
+
+        varying highp vec4      normal;
+        varying highp vec4      mPos;
+        varying highp vec4      mvPos;
+
+        void main() {
+            mPos = uMMatrix * vec4(aPosition, 1.0);
+            mvPos = uVMatrix * mPos;
+            gl_Position = uPMatrix * mvPos;
+
+            normal = vec4(aNormal, 1);
+        }`
+    export const normalMaterialFragmentShader = `\
+        precision mediump   float;
+        precision mediump   int;
+
+        uniform highp mat4  uNormalMatrix;
+
+        varying vec4        normal;
+
+        void                main() {
+            vec4 finalNormal = uNormalMatrix * normal;
+            gl_FragColor = vec4(finalNormal.xyz, 1);
         }`
 }

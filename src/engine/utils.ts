@@ -30,11 +30,11 @@ export class Program {
 
         let vHandle = renderer.gl.createShader(renderer.gl.VERTEX_SHADER);
         if (vHandle === null)
-            throw "Can't create vertex shader"
+            throw "Can't create vertex shader";
 
         let fHandle = renderer.gl.createShader(renderer.gl.FRAGMENT_SHADER);
         if (fHandle === null)
-            throw "Can't create fragment shader"
+            throw "Can't create fragment shader";
 
         renderer.gl.shaderSource(vHandle, vertexShader);
         renderer.gl.shaderSource(fHandle, fragmentShader);
@@ -50,8 +50,8 @@ export class Program {
         renderer.gl.attachShader(this.handle, vHandle);
         renderer.gl.attachShader(this.handle, fHandle);
 
-        renderer.gl.bindAttribLocation(this.handle, 0, "aPosition")
-        renderer.gl.bindAttribLocation(this.handle, 1, "aNormal")
+        renderer.gl.bindAttribLocation(this.handle, 0, "aPosition");
+        renderer.gl.bindAttribLocation(this.handle, 1, "aNormal");
 
         renderer.gl.linkProgram(this.handle);
         if (renderer.gl.getProgramParameter(this.handle, renderer.gl.LINK_STATUS) == false)
@@ -86,18 +86,18 @@ export class Program {
         if (typeof (content) == "number")
             renderer.gl.uniform1f(this.locations[name], content);
         else if (content instanceof BABYLON.Vector2)
-            renderer.gl.uniform2fv(this.locations[name], content.asArray())
+            renderer.gl.uniform2fv(this.locations[name], content.asArray());
         else if (content instanceof BABYLON.Vector4)
-            renderer.gl.uniform4fv(this.locations[name], content.asArray())
+            renderer.gl.uniform4fv(this.locations[name], content.asArray());
         else if (content instanceof BABYLON.Vector3)
-            renderer.gl.uniform3fv(this.locations[name], content.asArray())
+            renderer.gl.uniform3fv(this.locations[name], content.asArray());
         else if (content instanceof BABYLON.Color4)
-            renderer.gl.uniform4fv(this.locations[name], content.asArray())
+            renderer.gl.uniform4fv(this.locations[name], content.asArray());
         else if (content instanceof BABYLON.Matrix)
-            renderer.gl.uniformMatrix4fv(this.locations[name], false, content.asArray())
+            renderer.gl.uniformMatrix4fv(this.locations[name], false, content.asArray());
     }
 }
 
 export function map(val: number, a: number, b: number, A: number, B: number) {
-    return (val - a) * (B - A) / (b - a) + A
+    return (val - a) * (B - A) / (b - a) + A;
 }

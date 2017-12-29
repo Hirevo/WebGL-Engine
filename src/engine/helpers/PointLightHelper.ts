@@ -9,7 +9,7 @@ export class PointLightHelper extends Mesh {
     private currentPos: BABYLON.Vector3;
 
     constructor(light: PointLight) {
-        super(new SphereGeometry(2, 20), new BasicMaterial(light.color))
+        super(new SphereGeometry(2, 20), new BasicMaterial(light.color));
 
         // this.geometry.addVertex(new BABYLON.Vector3(3, 0, 0))
         // this.geometry.addVertex(new BABYLON.Vector3(-3, 0, 0))
@@ -27,40 +27,40 @@ export class PointLightHelper extends Mesh {
         // this.geometry.addFace(1, 2, 5)
         // this.geometry.addFace(1, 3, 5)
 
-        this.pos = light.pos
-        this.currentPos = this.pos.clone()
+        this.pos = light.pos;
+        this.currentPos = this.pos.clone();
     }
 
     display(renderer: Renderer, uVMatrix: BABYLON.Matrix, uPMatrix: BABYLON.Matrix, uVInvMatrix: BABYLON.Matrix, pointLights: PointLight[], spotLights: SpotLight[], ambientLight: AmbientLight) {
         if (!this.currentPos.equals(this.pos)) {
-            this.currentPos = this.pos.clone()
-            this.updateMatrices()
+            this.currentPos = this.pos.clone();
+            this.updateMatrices();
         }
         if (this.bufferList[renderer.id] === undefined || this.bufferList[renderer.id].geometryNeedUpdate)
-            this.genBuffers(renderer)
+            this.genBuffers(renderer);
         if (this.bufferList[renderer.id].materialNeedUpdate)
-            this.updateMaterial(renderer)
+            this.updateMaterial(renderer);
 
-        this.material.bind(renderer)
+        this.material.bind(renderer);
 
-        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, (renderer.getMode() == renderer.gl.LINES) ? this.bufferList[renderer.id].wvbuffer : this.bufferList[renderer.id].vbuffer)
-        renderer.gl.vertexAttribPointer(0, 3, renderer.gl.FLOAT, false, 0, 0)
-        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, (renderer.getMode() == renderer.gl.LINES) ? this.bufferList[renderer.id].wvbuffer : this.bufferList[renderer.id].vbuffer);
+        renderer.gl.vertexAttribPointer(0, 3, renderer.gl.FLOAT, false, 0, 0);
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
 
-        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, (renderer.getMode() == renderer.gl.LINES) ? this.bufferList[renderer.id].wnbuffer : this.bufferList[renderer.id].nbuffer)
-        renderer.gl.vertexAttribPointer(1, 3, renderer.gl.FLOAT, false, 0, 0)
-        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, (renderer.getMode() == renderer.gl.LINES) ? this.bufferList[renderer.id].wnbuffer : this.bufferList[renderer.id].nbuffer);
+        renderer.gl.vertexAttribPointer(1, 3, renderer.gl.FLOAT, false, 0, 0);
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
 
-        renderer.gl.enableVertexAttribArray(0)
-        renderer.gl.enableVertexAttribArray(1)
+        renderer.gl.enableVertexAttribArray(0);
+        renderer.gl.enableVertexAttribArray(1);
 
-        this.material.setUniforms(renderer, { uMMatrix: this.uMMatrix, uVMatrix, uPMatrix })
+        this.material.setUniforms(renderer, { uMMatrix: this.uMMatrix, uVMatrix, uPMatrix });
 
-        renderer.gl.drawArrays(renderer.getMode(), 0, ((renderer.getMode() == renderer.gl.LINES) ? 2 : 1) * this.geometry.faces.length * 3)
+        renderer.gl.drawArrays(renderer.getMode(), 0, ((renderer.getMode() == renderer.gl.LINES) ? 2 : 1) * this.geometry.faces.length * 3);
 
-        renderer.gl.disableVertexAttribArray(1)
-        renderer.gl.disableVertexAttribArray(0)
+        renderer.gl.disableVertexAttribArray(1);
+        renderer.gl.disableVertexAttribArray(0);
 
-        this.material.unbind(renderer)
+        this.material.unbind(renderer);
     }
 }

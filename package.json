@@ -4,20 +4,24 @@
   "description": "A little WebGL rendering engine. :D",
   "main": "dist/index.js",
   "scripts": {
-    "build-prod": "tsc ; npm run bundle-index-prod ; npm run bundle-motion-prod ; npm run bundle-terrain-prod",
-    "build-dev": "tsc ; npm run bundle-index-dev ; npm run bundle-motion-dev ; npm run bundle-terrain-dev",
+    "build-prod": "tsc ; npm run bundle-index-prod ; npm run bundle-motion-prod ; npm run bundle-terrain-prod ; npm run bundle-torusknot-prod",
+    "build-dev": "tsc ; npm run bundle-index-dev ; npm run bundle-motion-dev ; npm run bundle-terrain-dev ; npm run bundle-torusknot-dev",
     "build-index-prod": "tsc ; rollup --environment NODE_ENV:production,INPUT:dist/examples/index.js,OUTPUT:dist/builds/index.js -c",
     "build-index-dev": "tsc ; rollup --environment NODE_ENV:development,INPUT:dist/examples/index.js,OUTPUT:dist/builds/index.js -c",
     "build-motion-prod": "tsc ; rollup --environment NODE_ENV:production,INPUT:dist/examples/motion.js,OUTPUT:dist/builds/motion.js -c",
     "build-motion-dev": "tsc ; rollup --environment NODE_ENV:development,INPUT:dist/examples/motion.js,OUTPUT:dist/builds/motion.js -c",
     "build-terrain-prod": "tsc ; rollup --environment NODE_ENV:production,INPUT:dist/examples/terrain.js,OUTPUT:dist/builds/terrain.js -c",
     "build-terrain-dev": "tsc ; rollup --environment NODE_ENV:development,INPUT:dist/examples/terrain.js,OUTPUT:dist/builds/terrain.js -c",
+    "build-torusknot-prod": "tsc ; rollup --environment NODE_ENV:production,INPUT:dist/examples/torusknot.js,OUTPUT:dist/builds/torusknot.js -c",
+    "build-torusknot-dev": "tsc ; rollup --environment NODE_ENV:development,INPUT:dist/examples/torusknot.js,OUTPUT:dist/builds/torusknot.js -c",
     "bundle-index-prod": "rollup --environment NODE_ENV:production,INPUT:dist/examples/index.js,OUTPUT:dist/builds/index.js -c",
     "bundle-index-dev": "rollup --environment NODE_ENV:development,INPUT:dist/examples/index.js,OUTPUT:dist/builds/index.js -c",
     "bundle-motion-prod": "rollup --environment NODE_ENV:production,INPUT:dist/examples/motion.js,OUTPUT:dist/builds/motion.js -c",
     "bundle-motion-dev": "rollup --environment NODE_ENV:development,INPUT:dist/examples/motion.js,OUTPUT:dist/builds/motion.js -c",
     "bundle-terrain-prod": "rollup --environment NODE_ENV:production,INPUT:dist/examples/terrain.js,OUTPUT:dist/builds/terrain.js -c",
-    "bundle-terrain-dev": "rollup --environment NODE_ENV:development,INPUT:dist/examples/terrain.js,OUTPUT:dist/builds/terrain.js -c"
+    "bundle-terrain-dev": "rollup --environment NODE_ENV:development,INPUT:dist/examples/terrain.js,OUTPUT:dist/builds/terrain.js -c",
+    "bundle-torusknot-prod": "rollup --environment NODE_ENV:production,INPUT:dist/examples/torusknot.js,OUTPUT:dist/builds/torusknot.js -c",
+    "bundle-torusknot-dev": "rollup --environment NODE_ENV:development,INPUT:dist/examples/torusknot.js,OUTPUT:dist/builds/torusknot.js -c"
   },
   "keywords": [
     "WebGL",

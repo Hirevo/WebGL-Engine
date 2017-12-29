@@ -1,38 +1,58 @@
 import { Geometry } from "../Geometry"
 
 export class TorusKnotGeometry extends Geometry {
-    constructor(largeRadius: number, smallRadius: number, resolution: number) {
+    constructor(radius = 10, tube = 5, p = 2, q = 3, tubeSegments = 300, radialSegments = 50) {
         super()
 
-        let div = (2 * Math.PI) / resolution
-        let grid: { lon: number, lat: number, pos: BABYLON.Vector3 }[][] = []
-        let pi = Math.PI
-        let half_pi = pi / 2
-        for (let lon = -pi; lon <= (pi + div); lon += div) {
-            let tmp: { lon: number, lat: number, pos: BABYLON.Vector3 }[] = []
-            grid.push(tmp)
-            for (let lat = -pi; lat <= (pi + div); lat += div) {
-                let x = (largeRadius + smallRadius * Math.cos(lon)) * Math.cos(lat)
-                let y = (largeRadius + smallRadius * Math.cos(lon)) * Math.sin(lat)
-                let z = smallRadius * Math.sin(lon)
-                tmp.push({ lon, lat, pos: new BABYLON.Vector3(x, y, z) })
+        function getCurvePos(i: number, p: number, q: number, rad: number) {
+            const v = new BABYLON.Vector3(0, 0, 0);
+            const tmp = q / p * i;
+
+            v.x = rad * (2 + Math.cos(tmp)) * 0.5 * Math.cos(i);
+            v.y = rad * (2 + Math.cos(tmp)) * 0.5 * Math.sin(i);
+            v.z = rad * 0.5 * Math.sin(tmp);
+            return (v);
+        }
+
+        for (let i = 0; i <= tubeSegments; i++) {
+            const u = i / tubeSegments * p * Math.PI * 2;
+            const p1 = getCurvePos(u, p, q, radius);
+            const p2 = getCurvePos(u + 0.01, p, q, radius);
+
+            const T = p2.subtract(p1);
+            const M = p2.add(p1);
+            const B = BABYLON.Vector3.Cross(T, M);
+            const N = BABYLON.Vector3.Cross(B, T);
+
+            B.normalize();
+            N.normalize();
+
+            for (let j = 0; j <= radialSegments; j++) {
+                const v = j / radialSegments * Math.PI * 2;
+                const cx = - tube * Math.cos(v);
+                const cy = tube * Math.sin(v);
+                const x = p1.x + (cx * N.x + cy * B.x);
+                const y = p1.y + (cx * N.y + cy * B.y);
+                const z = p1.z + (cx * N.z + cy * B.z);
+
+                const vertex = new BABYLON.Vector3(x, y, z);
+                const normal = vertex.subtract(p1).normalize();
+
+                this.addVertex(vertex, normal);
             }
         }
 
-        let vertexCount = 0
-        for (let x = 0; x < grid.length; x++)
-            for (let y = 0; y < grid[x].length; y++)
-                this.addVertex(grid[x][y].pos, grid[x][y].pos.subtractFromFloats(largeRadius * Math.cos(grid[x][y].lat), largeRadius * Math.sin(grid[x][y].lat), 0))
+        for (let i = 1; i <= tubeSegments; i++) {
+            for (let j = 1; j <= radialSegments; j++) {
+                const a = (radialSegments + 1) * (i - 1) + (j - 1);
+                const b = (radialSegments + 1) * i + (j - 1);
+                const c = (radialSegments + 1) * i + j;
+                const d = (radialSegments + 1) * (i - 1) + j;
 
-        for (let y = 0; y < (grid.length - 1); y++)
-            for (let x = 0; x < (grid[y].length - 1); x++) {
-                let idx1 = x + (y + 1) * grid[y].length
-                let idx2 = x + y * grid[y].length
-                let idx3 = (x + 1) + y * grid[y].length
-                let idx4 = (x + 1) + (y + 1) * grid[y].length
-                this.addFace(idx1, idx2, idx4)
-                this.addFace(idx2, idx3, idx4)
+                this.addFace(a, b, d);
+                this.addFace(b, c, d);
             }
+        }
 
         this.vertexNormalsComputed = true;
     }

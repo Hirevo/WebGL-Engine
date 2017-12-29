@@ -6,9 +6,6 @@ uniform highp mat4      uMMatrix;
 uniform highp mat4      uVMatrix;
 uniform highp mat4      uPMatrix;
 
-uniform highp mat4      uNormalMatrix;
-
-varying highp vec4      lighting;
 varying highp vec4      normal;
 varying highp vec4      mPos;
 varying highp vec4      mvPos;
