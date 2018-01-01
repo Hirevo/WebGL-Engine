@@ -1,8 +1,18 @@
 import XHR from "./request"
 import * as Engine from "../engine/Engine"
 
-const renderer = new Engine.Renderer("draw");
-const renderer2 = new Engine.Renderer("draw2");
+const canvasResults = document.getElementsByTagName("canvas");
+
+const canvas = canvasResults[0];
+canvas.width = canvas.clientWidth;
+canvas.height = canvas.clientHeight;
+
+const canvas2 = canvasResults[1];
+canvas2.width = canvas2.clientWidth;
+canvas2.height = canvas2.clientHeight;
+
+const renderer = new Engine.Renderer(canvas);
+const renderer2 = new Engine.Renderer(canvas2);
 
 const camera = new Engine.Camera({ aspectRatio: renderer.canvas.width / renderer.canvas.height });
 const camera2 = new Engine.Camera({ aspectRatio: renderer2.canvas.width / renderer2.canvas.height });
@@ -162,7 +172,7 @@ document.addEventListener("contextmenu", ev => ev.preventDefault());
 //     last.x = ev.pageX;
 //     last.y = ev.pageY;
 // })
-document.addEventListener("mousewheel", ev => controls.distance -= (ev.deltaY > 0) ? -10 : 10);
+document.addEventListener("wheel", ev => controls.distance -= (ev.deltaY > 0) ? -10 : 10);
 document.addEventListener("keypress", ev => {
     if (ev.key == "w")
         renderer.setMode(renderer.getModeIdx() + 1);
@@ -197,7 +207,7 @@ const gui = new dat.GUI({
 let folder = gui.addFolder("Scene");
 folder.add(controls, "distance", 0, 750);
 let modeControl = folder.add(controls, "mode", { "Standard": 0, "Wireframe": 1, "Points": 2 });
-modeControl.onChange = (val) => { renderer.setMode(controls.mode); controls.mode = renderer.getModeIdx() };
+modeControl.onChange((val: number) => { renderer.setMode(controls.mode); controls.mode = renderer.getModeIdx() });
 
 folder = gui.addFolder("Spotlight");
 folder.add(spotlight, "intensity", 0, 700);

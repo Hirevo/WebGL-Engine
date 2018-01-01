@@ -1,15 +1,17 @@
 
 import uglify from 'rollup-plugin-uglify';
+import tscPlugin from 'rollup-plugin-typescript';
+import tsc from 'typescript';
 import { minify } from 'uglify-es';
 
 let config = {
     input: process.env.INPUT,
     output: {
         file: process.env.OUTPUT,
+        name: 'engine',
+        globals: { babylonjs: 'BABYLON' },
         format: 'iife'
     },
-    name: 'engine',
-    globals: { babylonjs: 'BABYLON' },
     onwarn(warning) {
         // Suppress known error message caused by TypeScript compiled code with Rollup
         // https://github.com/rollup/rollup/wiki/Troubleshooting#this-is-undefined
@@ -19,7 +21,11 @@ let config = {
         console.log("Rollup warning: ", warning.message);
     },
     external: ['babylonjs'],
-    plugins: []
+    plugins: [
+        tscPlugin({
+            typescript: tsc
+        })
+    ]
 };
 
 if (process.env.NODE_ENV == 'production')

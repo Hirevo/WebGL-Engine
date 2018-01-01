@@ -1,1 +1,3 @@
-webpack.config.js linguist-vendored=true
+* linguist-vendored=true
+src/* linguist-vendored=false
+shaders/* linguist-vendored=false

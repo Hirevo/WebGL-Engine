@@ -1,4 +1,4 @@
-import { Material } from "../Material"
+import { Material, ProgramList } from "../Material"
 import { PointLight, SpotLight, AmbientLight } from "../Scene";
 import { Renderer } from "../Renderer";
 import { Constants } from "../Engine";
@@ -21,6 +21,8 @@ interface PhongMaterialParameters {
     shininess?: number;
 }
 
+const programs: ProgramList = {};
+
 export class PhongMaterial extends Material {
 
     specular = 1;
@@ -28,7 +30,8 @@ export class PhongMaterial extends Material {
     diffuse = 1;
     color: BABYLON.Vector4;
     texture: number | undefined;
-
+    get identifier(): string { return "PhongMaterial"; };
+    
     constructor(options: PhongMaterialParameters = { color: new BABYLON.Vector4(1, 1, 1, 1), diffuse: 1, specular: 1, shininess: 1 }) {
         super(Constants.phongMaterialVertexShader, Constants.phongMaterialFragmentShader);
         this.color = (options.color === undefined) ? new BABYLON.Vector4(1, 1, 1, 1) : options.color;
@@ -36,6 +39,7 @@ export class PhongMaterial extends Material {
         this.specular = (options.specular === undefined) ? 1 : options.specular;
         this.shininess = (options.shininess === undefined) ? 1 : options.shininess;
         this.texture = undefined;
+        this.programs = programs;
     }
 
     async loadTexture() {
@@ -70,36 +74,36 @@ export class PhongMaterial extends Material {
     }
 
     setUniforms(renderer: Renderer, options: PhongMaterialRenderParameters) {
-        this.programs[renderer.id].setUniform(renderer, "uMMatrix", options.uMMatrix);
-        this.programs[renderer.id].setUniform(renderer, "uVMatrix", options.uVMatrix);
-        this.programs[renderer.id].setUniform(renderer, "uPMatrix", options.uPMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uMMatrix", options.uMMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uVMatrix", options.uVMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uPMatrix", options.uPMatrix);
 
-        this.programs[renderer.id].setUniform(renderer, "uVInvMatrix", options.uVInvMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uVInvMatrix", options.uVInvMatrix);
 
-        this.programs[renderer.id].setUniform(renderer, "uALight.color", options.ambientLight.color);
+        renderer.programs[this.identifier].setUniform(renderer, "uALight.color", options.ambientLight.color);
 
-        this.programs[renderer.id].setUniform(renderer, "uNbPLights", options.pointLights.length);
+        renderer.programs[this.identifier].setUniform(renderer, "uNbPLights", options.pointLights.length);
         options.pointLights.forEach((light, idx) => {
-            this.programs[renderer.id].setUniform(renderer, `uPLights[${idx}].pos`, light.pos);
-            this.programs[renderer.id].setUniform(renderer, `uPLights[${idx}].color`, light.color);
-            this.programs[renderer.id].setUniform(renderer, `uPLights[${idx}].intensity`, light.intensity);
+            renderer.programs[this.identifier].setUniform(renderer, `uPLights[${idx}].pos`, light.pos);
+            renderer.programs[this.identifier].setUniform(renderer, `uPLights[${idx}].color`, light.color);
+            renderer.programs[this.identifier].setUniform(renderer, `uPLights[${idx}].intensity`, light.intensity);
         });
 
-        this.programs[renderer.id].setUniform(renderer, "uNbSLights", options.spotLights.length);
+        renderer.programs[this.identifier].setUniform(renderer, "uNbSLights", options.spotLights.length);
         options.spotLights.forEach((light, idx) => {
-            this.programs[renderer.id].setUniform(renderer, `uSLights[${idx}].pos`, light.pos);
-            this.programs[renderer.id].setUniform(renderer, `uSLights[${idx}].dir`, light.dir);
-            this.programs[renderer.id].setUniform(renderer, `uSLights[${idx}].aper`, light.aperture);
-            this.programs[renderer.id].setUniform(renderer, `uSLights[${idx}].color`, light.color);
-            this.programs[renderer.id].setUniform(renderer, `uSLights[${idx}].intensity`, light.intensity);
+            renderer.programs[this.identifier].setUniform(renderer, `uSLights[${idx}].pos`, light.pos);
+            renderer.programs[this.identifier].setUniform(renderer, `uSLights[${idx}].dir`, light.dir);
+            renderer.programs[this.identifier].setUniform(renderer, `uSLights[${idx}].aper`, light.aperture);
+            renderer.programs[this.identifier].setUniform(renderer, `uSLights[${idx}].color`, light.color);
+            renderer.programs[this.identifier].setUniform(renderer, `uSLights[${idx}].intensity`, light.intensity);
         })
 
-        this.programs[renderer.id].setUniform(renderer, "uNormalMatrix", options.uNormalMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uNormalMatrix", options.uNormalMatrix);
 
-        this.programs[renderer.id].setUniform(renderer, "color", this.color);
-        this.programs[renderer.id].setUniform(renderer, "diffuse", this.diffuse);
-        this.programs[renderer.id].setUniform(renderer, "specular", this.specular);
-        this.programs[renderer.id].setUniform(renderer, "shininess", this.shininess);
+        renderer.programs[this.identifier].setUniform(renderer, "color", this.color);
+        renderer.programs[this.identifier].setUniform(renderer, "diffuse", this.diffuse);
+        renderer.programs[this.identifier].setUniform(renderer, "specular", this.specular);
+        renderer.programs[this.identifier].setUniform(renderer, "shininess", this.shininess);
     }
 
     clone() {

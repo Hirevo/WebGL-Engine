@@ -1,4 +1,4 @@
-import { Material } from "../Material";
+import { Material, ProgramList } from "../Material";
 import { Renderer } from "../Renderer";
 import { Constants } from "../Engine";
 
@@ -9,17 +9,23 @@ interface NormalMaterialRenderParameters {
     uNormalMatrix: BABYLON.Matrix;
 }
 
+const programs: ProgramList = {};
+
 export class NormalMaterial extends Material {
+
+    get identifier(): string { return "NormalMaterial"; };
+
     constructor() {
         super(Constants.normalMaterialVertexShader, Constants.normalMaterialFragmentShader);
+        this.programs = programs;
     }
 
     setUniforms(renderer: Renderer, options: NormalMaterialRenderParameters) {
-        this.programs[renderer.id].setUniform(renderer, "uMMatrix", options.uMMatrix);
-        this.programs[renderer.id].setUniform(renderer, "uVMatrix", options.uVMatrix);
-        this.programs[renderer.id].setUniform(renderer, "uPMatrix", options.uPMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uMMatrix", options.uMMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uVMatrix", options.uVMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uPMatrix", options.uPMatrix);
 
-        this.programs[renderer.id].setUniform(renderer, "uNormalMatrix", options.uNormalMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uNormalMatrix", options.uNormalMatrix);
     }
 
     clone() {

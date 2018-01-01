@@ -1,4 +1,4 @@
-import { Material } from "../Material";
+import { Material, ProgramList } from "../Material";
 import { Renderer } from "../Renderer";
 import { Constants } from "../Engine";
 
@@ -8,13 +8,17 @@ interface BasicMaterialRenderParameters {
     uPMatrix: BABYLON.Matrix;
 }
 
+const programs: ProgramList = {};
+
 export class BasicMaterial extends Material {
 
     color: BABYLON.Vector4;
+    get identifier(): string { return "BasicMaterial"; };
 
     constructor(color: BABYLON.Vector4) {
         super(Constants.baseMaterialVertexShader, Constants.baseMaterialFragmentShader);
         this.color = color;
+        this.programs = programs;
     }
 
     setColor(v1: number | BABYLON.Vector4, v2?: number, v3?: number, v4?: number) {
@@ -41,11 +45,11 @@ export class BasicMaterial extends Material {
     }
 
     setUniforms(renderer: Renderer, options: BasicMaterialRenderParameters) {
-        this.programs[renderer.id].setUniform(renderer, "uMMatrix", options.uMMatrix);
-        this.programs[renderer.id].setUniform(renderer, "uVMatrix", options.uVMatrix);
-        this.programs[renderer.id].setUniform(renderer, "uPMatrix", options.uPMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uMMatrix", options.uMMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uVMatrix", options.uVMatrix);
+        renderer.programs[this.identifier].setUniform(renderer, "uPMatrix", options.uPMatrix);
 
-        this.programs[renderer.id].setUniform(renderer, "color", this.color);
+        renderer.programs[this.identifier].setUniform(renderer, "color", this.color);
     }
 
     clone() {

@@ -1,7 +1,11 @@
 import XHR from "./request"
 import * as Engine from "../engine/Engine"
 
-const renderer = new Engine.Renderer("draw");
+const canvas = document.getElementsByTagName("canvas")[0];
+canvas.width = canvas.clientWidth;
+canvas.height = canvas.clientHeight;
+
+const renderer = new Engine.Renderer(canvas);
 
 const camera = new Engine.Camera({ aspectRatio: renderer.canvas.width / renderer.canvas.height });
 
@@ -143,7 +147,7 @@ const controls = {
 };
 
 document.addEventListener("contextmenu", ev => ev.preventDefault());
-document.addEventListener("mousewheel", ev => controls.distance -= (ev.deltaY > 0) ? -10 : 10);
+document.addEventListener("wheel", ev => controls.distance -= (ev.deltaY > 0) ? -10 : 10);
 document.addEventListener("keydown", ev => {
     if (ev.key == "z")
         move = move | (1 << 0);
@@ -176,20 +180,20 @@ function display() {
     camera.pos.z = Math.sin(val) * controls.distance;
     camera.pos.y = controls.distance;
     camera.matricesNeedUpdate = true;
-
+    
     if (move & (1 << 0))
-        if (mesh.car) mesh.car.forward(-5, bias);
+    if (mesh.car) mesh.car.forward(-5, bias);
     if (move & (1 << 1))
-        if (mesh.car) mesh.car.forward(5, bias);
+    if (mesh.car) mesh.car.forward(5, bias);
     if (move & (1 << 2))
-        if (mesh.car) mesh.car.rotateY(-0.1);
+    if (mesh.car) mesh.car.rotateY(-0.1);
     if (move & (1 << 3))
-        if (mesh.car) mesh.car.rotateY(0.1);
-
+    if (mesh.car) mesh.car.rotateY(0.1);
+    
     renderer.render(scene, camera);
-
+    
     if (rotate)
-        val = (val + 0.02) % (Math.PI * 2);
+    val = (val + 0.02) % (Math.PI * 2);
 
     requestAnimationFrame(display);
 }
@@ -202,7 +206,7 @@ let gui = new dat.GUI({
 let folder = gui.addFolder("Scene");
 folder.add(controls, "distance", 0, 750);
 let modeControl = folder.add(controls, "mode", { "Standard": 0, "Wireframe": 1, "Points": 2 });
-modeControl.onChange = (val) => { renderer.setMode(controls.mode); controls.mode = renderer.getModeIdx() };
+modeControl.onChange((val: number) => { renderer.setMode(controls.mode); controls.mode = renderer.getModeIdx() });
 
 folder = gui.addFolder("Spotlight");
 folder.add(spotlight, "intensity", 0, 700);

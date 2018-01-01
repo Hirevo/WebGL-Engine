@@ -1,7 +1,7 @@
 import { Program } from "./utils";
 import { Renderer } from "./Renderer";
 
-interface ProgramList {
+export interface ProgramList {
     [rendererId: string]: Program;
 }
 
@@ -10,6 +10,7 @@ export class Material {
     protected programs: ProgramList;
     protected vertexSource: string;
     protected fragmentSource: string;
+    get identifier(): string { return "Material"; };
 
     constructor(vertexShader: string, fragmentShader: string) {
         this.programs = {}
@@ -26,15 +27,15 @@ export class Material {
     }
 
     initProgram(renderer: Renderer) {
-        this.programs[renderer.id] = new Program(renderer, this.vertexSource, this.fragmentSource);
+        renderer.programs[this.identifier] = new Program(renderer, this.vertexSource, this.fragmentSource);
     }
 
     bind(renderer: Renderer) {
-        this.programs[renderer.id].bind(renderer);
+        renderer.programs[this.identifier].bind(renderer);
     }
 
     unbind(renderer: Renderer) {
-        this.programs[renderer.id].unbind(renderer);
+        renderer.programs[this.identifier].unbind(renderer);
     }
 
     setUniforms(renderer: Renderer, options: any) {

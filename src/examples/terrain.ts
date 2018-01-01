@@ -1,7 +1,11 @@
 import XHR from "./request"
 import * as Engine from "../engine/Engine"
 
-const renderer = new Engine.Renderer("draw");
+const canvas = document.getElementsByTagName("canvas")[0];
+canvas.width = canvas.clientWidth;
+canvas.height = canvas.clientHeight;
+
+const renderer = new Engine.Renderer(canvas);
 
 const camera = new Engine.Camera({ aspectRatio: renderer.canvas.width / renderer.canvas.height, far: 50000 });
 
@@ -58,7 +62,7 @@ let val = 0;
 let rotate = false;
 
 document.addEventListener("contextmenu", ev => ev.preventDefault());
-document.addEventListener("mousewheel", ev => {
+document.addEventListener("wheel", ev => {
     controls.distance -= (ev.deltaY > 0) ? -10 : 10;
     camera.pos.x = Math.cos(val) * controls.distance;
     camera.pos.z = Math.sin(val) * controls.distance;
@@ -106,7 +110,7 @@ folder.add(controls, "distance", 0, 4000).listen().onChange(() => {
 
 let modeControl: dat.GUIController;
 modeControl = folder.add(controls, "mode", { "Standard": 0, "Wireframe": 1, "Points": 2 }).listen();
-modeControl.onFinishChange((val: number) => { renderer.setMode(controls.mode); controls.mode = renderer.getModeIdx() });
+modeControl.onChange((val: number) => { renderer.setMode(controls.mode); controls.mode = renderer.getModeIdx() });
 
 folder.add(controls, "amplitude").listen();
 folder.add(controls, "frequency").listen();

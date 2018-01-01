@@ -101,3 +101,9 @@ export class Program {
 export function map(val: number, a: number, b: number, A: number, B: number) {
     return (val - a) * (B - A) / (b - a) + A;
 }
+
+export function dist(x: number, y: number, X: number, Y: number) {
+    const distX = X - x;
+    const distY = Y - y;
+    return Math.sqrt(distX * distX + distY * distY);
+}

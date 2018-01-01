@@ -9,7 +9,7 @@ export class PointLightHelper extends Mesh {
     private currentPos: BABYLON.Vector3;
 
     constructor(light: PointLight) {
-        super(new SphereGeometry(2, 20), new BasicMaterial(light.color));
+        super(new SphereGeometry(2, 10), new BasicMaterial(light.color));
 
         // this.geometry.addVertex(new BABYLON.Vector3(3, 0, 0))
         // this.geometry.addVertex(new BABYLON.Vector3(-3, 0, 0))
@@ -51,15 +51,9 @@ export class PointLightHelper extends Mesh {
         renderer.gl.vertexAttribPointer(1, 3, renderer.gl.FLOAT, false, 0, 0);
         renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
 
-        renderer.gl.enableVertexAttribArray(0);
-        renderer.gl.enableVertexAttribArray(1);
-
         this.material.setUniforms(renderer, { uMMatrix: this.uMMatrix, uVMatrix, uPMatrix });
 
         renderer.gl.drawArrays(renderer.getMode(), 0, ((renderer.getMode() == renderer.gl.LINES) ? 2 : 1) * this.geometry.faces.length * 3);
-
-        renderer.gl.disableVertexAttribArray(1);
-        renderer.gl.disableVertexAttribArray(0);
 
         this.material.unbind(renderer);
     }

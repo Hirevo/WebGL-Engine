@@ -1,20 +1,23 @@
 import { Scene } from "./Scene";
 import { Camera } from "./Camera";
+import { Program, Material } from "./Engine";
+
+interface RendererProgramList {
+    [material: string]: Program;
+}
 
 export class Renderer {
-
     id: string;
+    programs: RendererProgramList;
     canvas: HTMLCanvasElement;
     gl: WebGLRenderingContext;
     private modes: number[];
     private mode: number;
 
-    constructor(id: string) {
-        this.id = id;
-        this.canvas = document.getElementById(id) as HTMLCanvasElement;
-        this.canvas.width = this.canvas.clientWidth;
-        this.canvas.height = this.canvas.clientHeight;
-        let ctx = this.canvas.getContext("webgl");
+    constructor(canvas: HTMLCanvasElement, contextAttributes?: WebGLContextAttributes) {
+        this.id = new Date().valueOf().toString();
+        this.canvas = canvas;
+        let ctx = this.canvas.getContext("webgl", contextAttributes);
         if (ctx == null)
             throw "WebGL not supported !";
         this.gl = ctx;
@@ -23,8 +26,11 @@ export class Renderer {
         this.gl.depthFunc(this.gl.LEQUAL);
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.clearColor(0, 0, 0, 1);
+        this.gl.enableVertexAttribArray(0);
+        this.gl.enableVertexAttribArray(1);
         this.modes = [this.gl.TRIANGLES, this.gl.LINES, this.gl.POINTS];
         this.mode = 0;
+        this.programs = {};
     }
 
     setMode(mode: number) {
@@ -42,6 +48,8 @@ export class Renderer {
     render(scene: Scene, camera: Camera) {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         scene.render(this, camera);
+        if ("commit" in this.gl)
+            (this.gl as any).commit();
     }
 
 }

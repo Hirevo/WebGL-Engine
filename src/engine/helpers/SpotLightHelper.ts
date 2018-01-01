@@ -93,15 +93,9 @@ export class SpotLightHelper extends Mesh {
         renderer.gl.vertexAttribPointer(1, 3, renderer.gl.FLOAT, false, 0, 0);
         renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
 
-        renderer.gl.enableVertexAttribArray(0);
-        renderer.gl.enableVertexAttribArray(1);
-
         this.material.setUniforms(renderer, { uMMatrix: this.uMMatrix, uVMatrix, uPMatrix });
 
         renderer.gl.drawArrays(renderer.gl.LINES, 0, 2 * this.geometry.faces.length * 3);
-
-        renderer.gl.disableVertexAttribArray(1);
-        renderer.gl.disableVertexAttribArray(0);
 
         this.material.unbind(renderer);
     }

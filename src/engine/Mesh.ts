@@ -161,7 +161,7 @@ export class Mesh {
         const wnarray: number[] = [];
 
         if (this.bufferList[renderer.id] === undefined)
-            this.bufferList[renderer.id] = { materialNeedUpdate: true, geometryNeedUpdate: true } as BufferData;
+            this.bufferList[renderer.id] = { materialNeedUpdate: renderer.programs[this.material.identifier] === undefined, geometryNeedUpdate: true } as BufferData;
         else {
             renderer.gl.deleteBuffer(this.bufferList[renderer.id].vbuffer);
             renderer.gl.deleteBuffer(this.bufferList[renderer.id].nbuffer);
@@ -234,8 +234,6 @@ export class Mesh {
             this.updateMatrices();
         if (this.bufferList[renderer.id] === undefined || this.bufferList[renderer.id].geometryNeedUpdate)
             this.genBuffers(renderer);
-        if (this.bufferList[renderer.id].materialNeedUpdate)
-            this.updateMaterial(renderer);
 
         const materialOptions = {
             uMMatrix: this.uMMatrix,
@@ -248,7 +246,6 @@ export class Mesh {
             ambientLight
         };
 
-        this.material.bind(renderer);
         this.material.setUniforms(renderer, materialOptions);
 
         renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, (renderer.getMode() == renderer.gl.LINES) ? this.bufferList[renderer.id].wvbuffer : this.bufferList[renderer.id].vbuffer);
@@ -259,15 +256,8 @@ export class Mesh {
         renderer.gl.vertexAttribPointer(1, 3, renderer.gl.FLOAT, false, 0, 0);
         renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
 
-        renderer.gl.enableVertexAttribArray(0);
-        renderer.gl.enableVertexAttribArray(1);
-
         renderer.gl.drawArrays(renderer.getMode(), 0, ((renderer.getMode() == renderer.gl.LINES) ? 2 : 1) * this.geometry.faces.length * 3);
 
-        renderer.gl.disableVertexAttribArray(1);
-        renderer.gl.disableVertexAttribArray(0);
-
-        this.material.unbind(renderer);
     }
 
     static loadObj(file: string, material?: Material) {

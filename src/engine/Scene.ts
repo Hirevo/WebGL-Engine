@@ -1,6 +1,7 @@
 import { Mesh } from "./Mesh"
 import { Renderer } from "./Renderer";
 import { Camera } from "./Camera";
+import { Material, Program } from "./Engine";
 
 export interface PointLight {
     pos: BABYLON.Vector3;
@@ -21,15 +22,21 @@ export interface AmbientLight {
     color: BABYLON.Vector4;
 }
 
+export interface SortedMeshes {
+    [material: string]: Mesh[];
+}
+
 export class Scene {
 
     private meshes: Mesh[];
+    private sortedMeshes: SortedMeshes;
     private pointLights: PointLight[];
     private spotLights: SpotLight[]
     private ambientLight: AmbientLight;
 
     constructor() {
         this.meshes = [];
+        this.sortedMeshes = {};
         this.pointLights = [];
         this.spotLights = [];
         this.ambientLight = { color: BABYLON.Vector4.Zero() };
@@ -37,6 +44,9 @@ export class Scene {
 
     addMesh(mesh: Mesh) {
         this.meshes.push(mesh);
+        if (this.sortedMeshes[mesh.material.identifier] === undefined)
+            this.sortedMeshes[mesh.material.identifier] = [];
+        this.sortedMeshes[mesh.material.identifier].push(mesh);
         return mesh;
     }
 
@@ -45,7 +55,11 @@ export class Scene {
     }
 
     removeMesh(idx: number) {
-        return this.meshes.splice(idx, 1)[0];
+        const mesh = this.meshes.splice(idx, 1)[0];
+        const arrIdx = this.sortedMeshes[mesh.material.identifier].indexOf(mesh);
+
+        this.sortedMeshes[mesh.material.identifier].splice(arrIdx, 1);
+        return mesh;
     }
 
     addPointLight(pos: BABYLON.Vector3, color = new BABYLON.Vector4(1, 1, 1, 1), intensity = 300) {
@@ -106,6 +120,12 @@ export class Scene {
     render(renderer: Renderer, camera: Camera) {
         if (camera.matricesNeedUpdate)
             camera.updateMatrices();
-        this.meshes.forEach(mesh => mesh.display(renderer, camera.uVMatrix, camera.uPMatrix, camera.uVInvMatrix, this.pointLights, this.spotLights, this.ambientLight));
+        for (const material in this.sortedMeshes) {
+            if (renderer.programs[material] === undefined)
+                this.sortedMeshes[material][0].material.initProgram(renderer);
+            renderer.programs[material].bind(renderer);
+            this.sortedMeshes[material].forEach(mesh => mesh.display(renderer, camera.uVMatrix, camera.uPMatrix, camera.uVInvMatrix, this.pointLights, this.spotLights, this.ambientLight));
+            renderer.programs[material].unbind(renderer);
+        }
     }
 }
