@@ -60,7 +60,7 @@ scene.addAmbientLight(new BABYLON.Vector4(.1, .1, .1, 1));
 
 let pos = 0, posInc = -0.005;
 
-console.log(scene);
+// console.log(scene);
 
 let drag = false;
 let last = { x: 0, y: 0 };

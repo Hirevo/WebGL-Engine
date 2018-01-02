@@ -1,6 +1,7 @@
 import { Scene } from "./Scene";
 import { Camera } from "./Camera";
 import { Program, Material } from "./Engine";
+import { RenderTexture } from "./RenderTexture";
 
 interface RendererProgramList {
     [material: string]: Program;
@@ -15,7 +16,7 @@ export class Renderer {
     private mode: number;
 
     constructor(canvas: HTMLCanvasElement, contextAttributes?: WebGLContextAttributes) {
-        this.id = new Date().valueOf().toString();
+        this.id = `renderer${new Date().valueOf().toString()}`;
         this.canvas = canvas;
         let ctx = this.canvas.getContext("webgl", contextAttributes);
         if (ctx == null)
@@ -28,6 +29,8 @@ export class Renderer {
         this.gl.clearColor(0, 0, 0, 1);
         this.gl.enableVertexAttribArray(0);
         this.gl.enableVertexAttribArray(1);
+        this.gl.enableVertexAttribArray(2);
+        this.gl.activeTexture(this.gl.TEXTURE0);
         this.modes = [this.gl.TRIANGLES, this.gl.LINES, this.gl.POINTS];
         this.mode = 0;
         this.programs = {};
@@ -45,11 +48,15 @@ export class Renderer {
         return this.modes[this.mode];
     }
 
-    render(scene: Scene, camera: Camera) {
+    render(scene: Scene, camera: Camera, renderTarget?: RenderTexture) {
+        if (renderTarget)
+            renderTarget.bindFramebuffer(this);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         scene.render(this, camera);
-        if ("commit" in this.gl)
-            (this.gl as any).commit();
+        if (renderTarget)
+            renderTarget.unbindFramebuffer(this);
+        // if ("commit" in this.gl)
+        //     (this.gl as any).commit();
     }
 
 }

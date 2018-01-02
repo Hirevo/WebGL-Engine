@@ -54,7 +54,7 @@ const n = setInterval(() => {
     mesh.plane.requestGeometryUpdate(true);
 }, 10)
 
-console.log(scene);
+// console.log(scene);
 
 const last = { x: 0, y: 0 };
 let moveMode = 0;

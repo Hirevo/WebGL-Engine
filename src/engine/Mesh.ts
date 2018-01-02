@@ -12,6 +12,8 @@ interface BufferData {
     wvbuffer: WebGLBuffer;
     nbuffer: WebGLBuffer;
     wnbuffer: WebGLBuffer;
+    tbuffer: WebGLBuffer;
+    wtbuffer: WebGLBuffer;
 };
 
 interface BufferDataList {
@@ -157,16 +159,20 @@ export class Mesh {
         const size = this.geometry.faces.length * 3 * 3;
         const varray: number[] = [];
         const narray: number[] = [];
+        const tarray: number[] = [];
         const wvarray: number[] = [];
         const wnarray: number[] = [];
+        const wtarray: number[] = [];
 
         if (this.bufferList[renderer.id] === undefined)
             this.bufferList[renderer.id] = { materialNeedUpdate: renderer.programs[this.material.identifier] === undefined, geometryNeedUpdate: true } as BufferData;
         else {
             renderer.gl.deleteBuffer(this.bufferList[renderer.id].vbuffer);
             renderer.gl.deleteBuffer(this.bufferList[renderer.id].nbuffer);
+            renderer.gl.deleteBuffer(this.bufferList[renderer.id].tbuffer);
             renderer.gl.deleteBuffer(this.bufferList[renderer.id].wvbuffer);
             renderer.gl.deleteBuffer(this.bufferList[renderer.id].wnbuffer);
+            renderer.gl.deleteBuffer(this.bufferList[renderer.id].wtbuffer);
         }
 
         this.geometry.faces.forEach((face, idx) => {
@@ -176,11 +182,14 @@ export class Mesh {
                 (this.geometry.vertexNormalsComputed)
                     ? [[...face.v1.normal.asArray()], [...face.v2.normal.asArray()], [...face.v3.normal.asArray()]]
                     : [normal, normal, normal];
+            const UVs = [[...face.t1.asArray()], [...face.t2.asArray()], [...face.t3.asArray()]];
 
             varray.push(...faces[0], ...faces[1], ...faces[2]);
             wvarray.push(...faces[0], ...faces[1], ...faces[1], ...faces[2], ...faces[2], ...faces[0]);
             narray.push(...normals[0], ...normals[1], ...normals[2]);
             wnarray.push(...normals[0], ...normals[1], ...normals[1], ...normals[2], ...normals[2], ...normals[0]);
+            tarray.push(...UVs[0], ...UVs[1], ...UVs[2]);
+            wtarray.push(...UVs[0], ...UVs[1], ...UVs[1], ...UVs[2], ...UVs[2], ...UVs[0]);
         });
 
         const vbuffer = renderer.gl.createBuffer();
@@ -201,14 +210,23 @@ export class Mesh {
         renderer.gl.bufferData(renderer.gl.ARRAY_BUFFER, new Float32Array(narray), renderer.gl.STATIC_DRAW);
         renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
 
-        const wvbuffer = renderer.gl.createBuffer()
-        if (wvbuffer === null)
-            throw "Couldn't create buffer"
-        this.bufferList[renderer.id].wvbuffer = wvbuffer
+        const tbuffer = renderer.gl.createBuffer();
+        if (tbuffer === null)
+            throw "Couldn't create buffer";
+        this.bufferList[renderer.id].tbuffer = tbuffer;
 
-        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, this.bufferList[renderer.id].wvbuffer)
-        renderer.gl.bufferData(renderer.gl.ARRAY_BUFFER, new Float32Array(wvarray), renderer.gl.STATIC_DRAW)
-        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null)
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, this.bufferList[renderer.id].tbuffer);
+        renderer.gl.bufferData(renderer.gl.ARRAY_BUFFER, new Float32Array(tarray), renderer.gl.STATIC_DRAW);
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
+
+        const wvbuffer = renderer.gl.createBuffer();
+        if (wvbuffer === null)
+            throw "Couldn't create buffer";
+        this.bufferList[renderer.id].wvbuffer = wvbuffer;
+
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, this.bufferList[renderer.id].wvbuffer);
+        renderer.gl.bufferData(renderer.gl.ARRAY_BUFFER, new Float32Array(wvarray), renderer.gl.STATIC_DRAW);
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
 
         const wnbuffer = renderer.gl.createBuffer();
         if (wnbuffer === null)
@@ -217,6 +235,15 @@ export class Mesh {
 
         renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, this.bufferList[renderer.id].wnbuffer);
         renderer.gl.bufferData(renderer.gl.ARRAY_BUFFER, new Float32Array(wnarray), renderer.gl.STATIC_DRAW);
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
+
+        const wtbuffer = renderer.gl.createBuffer();
+        if (wtbuffer === null)
+            throw "Couldn't create buffer";
+        this.bufferList[renderer.id].wtbuffer = wtbuffer;
+
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, this.bufferList[renderer.id].wtbuffer);
+        renderer.gl.bufferData(renderer.gl.ARRAY_BUFFER, new Float32Array(wtarray), renderer.gl.STATIC_DRAW);
         renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
 
         this.bufferList[renderer.id].geometryNeedUpdate = false;
@@ -256,8 +283,17 @@ export class Mesh {
         renderer.gl.vertexAttribPointer(1, 3, renderer.gl.FLOAT, false, 0, 0);
         renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
 
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, (renderer.getMode() == renderer.gl.LINES) ? this.bufferList[renderer.id].wtbuffer : this.bufferList[renderer.id].tbuffer);
+        renderer.gl.vertexAttribPointer(2, 2, renderer.gl.FLOAT, false, 0, 0);
+        renderer.gl.bindBuffer(renderer.gl.ARRAY_BUFFER, null);
+
+        if (this.material.hasTexture)
+            this.material.texture.bind(renderer);
+
         renderer.gl.drawArrays(renderer.getMode(), 0, ((renderer.getMode() == renderer.gl.LINES) ? 2 : 1) * this.geometry.faces.length * 3);
 
+        if (this.material.hasTexture)
+            this.material.texture.unbind(renderer);
     }
 
     static loadObj(file: string, material?: Material) {

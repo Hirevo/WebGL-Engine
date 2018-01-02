@@ -27,8 +27,13 @@ export class PlaneGeometry extends Geometry {
                 const idx3 = x + (y + 1) * this.grid[y].length;
                 const idx4 = (x + 1) + (y + 1) * this.grid[y].length;
 
-                this.addFace(idx1, idx2, idx3);
-                this.addFace(idx2, idx3, idx4);
+                const uv1 = new BABYLON.Vector2(x / (this.grid[y].length - 1), y / (this.grid.length - 1));
+                const uv2 = new BABYLON.Vector2((x + 1) / (this.grid[y].length - 1), y / (this.grid.length - 1));
+                const uv3 = new BABYLON.Vector2(x / (this.grid[y].length - 1), (y + 1) / (this.grid.length - 1));
+                const uv4 = new BABYLON.Vector2((x + 1) / (this.grid[y].length - 1), (y + 1) / (this.grid.length - 1));
+
+                this.addFace(idx1, idx2, idx3, BABYLON.Vector3.Up(), uv1, uv2, uv3);
+                this.addFace(idx2, idx3, idx4, BABYLON.Vector3.Up(), uv2, uv3, uv4);
             }
 
         this.vertexNormalsComputed = true;

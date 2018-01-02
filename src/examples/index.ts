@@ -57,14 +57,14 @@ const mesh = {
     sphere: new Engine.Mesh(new Engine.TorusGeometry(2, 1, 50), materials.sphere)
 } as { plane: Engine.Mesh, car: Engine.Mesh, dragon: Engine.Mesh, teapot: Engine.Mesh, crank: Engine.Mesh, sphere: Engine.Mesh };
 
-XHR.async("models/test.obj").then(async file => {
+XHR.async("resources/models/test.obj").then(async file => {
     mesh.car = await Engine.Mesh.loadObjAsync(file, materials.car);
     mesh.car.translateX(100);
     mesh.car.scale(15);
     scene.addMesh(mesh.car);
 });
 
-XHR.async("models/dragon.obj").then(async file => {
+XHR.async("resources/models/dragon.obj").then(async file => {
     mesh.dragon = await Engine.Mesh.loadObjAsync(file, materials.dragon);
     mesh.dragon.scale(50);
     mesh.dragon.rotateX(-10 * Math.PI / 180);
@@ -73,7 +73,7 @@ XHR.async("models/dragon.obj").then(async file => {
     scene.addMesh(mesh.dragon);
 });
 
-XHR.async("models/teapot.obj").then(async file => {
+XHR.async("resources/models/teapot.obj").then(async file => {
     mesh.teapot = await Engine.Mesh.loadObjAsync(file, materials.teapot);
     mesh.teapot.scale(10);
     mesh.teapot.computeVertexNormals();
@@ -81,7 +81,7 @@ XHR.async("models/teapot.obj").then(async file => {
     scene.addMesh(mesh.teapot);
 });
 
-XHR.async("models/crank.obj").then(async file => {
+XHR.async("resources/models/crank.obj").then(async file => {
     mesh.crank = await Engine.Mesh.loadObjAsync(file, materials.crank);
     mesh.crank.scale(30);
     mesh.crank.translateX(-100);

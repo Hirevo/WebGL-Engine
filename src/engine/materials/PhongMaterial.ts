@@ -1,7 +1,9 @@
 import { Material, ProgramList } from "../Material"
 import { PointLight, SpotLight, AmbientLight } from "../Scene";
 import { Renderer } from "../Renderer";
-import { Constants } from "../Engine";
+import { Constants, Texture } from "../Engine";
+import phongMaterialVertexShader from "./../../../shaders/phongShading/vert.vs";
+import phongMaterialFragmentShader from "./../../../shaders/phongShading/frag.fs";
 
 interface PhongMaterialRenderParameters {
     uMMatrix: BABYLON.Matrix;
@@ -19,35 +21,24 @@ interface PhongMaterialParameters {
     diffuse?: number;
     specular?: number;
     shininess?: number;
+    texture?: Texture;
 }
 
 const programs: ProgramList = {};
 
 export class PhongMaterial extends Material {
-
     specular = 1;
     shininess = 1;
     diffuse = 1;
     color: BABYLON.Vector4;
-    texture: number | undefined;
     get identifier(): string { return "PhongMaterial"; };
     
-    constructor(options: PhongMaterialParameters = { color: new BABYLON.Vector4(1, 1, 1, 1), diffuse: 1, specular: 1, shininess: 1 }) {
-        super(Constants.phongMaterialVertexShader, Constants.phongMaterialFragmentShader);
+    constructor(options: PhongMaterialParameters = { color: new BABYLON.Vector4(1, 1, 1, 1), diffuse: 1, specular: 1, shininess: 1, texture: undefined }) {
+        super(phongMaterialVertexShader, phongMaterialFragmentShader, options.texture);
         this.color = (options.color === undefined) ? new BABYLON.Vector4(1, 1, 1, 1) : options.color;
         this.diffuse = (options.diffuse === undefined) ? 1 : options.diffuse;
         this.specular = (options.specular === undefined) ? 1 : options.specular;
         this.shininess = (options.shininess === undefined) ? 1 : options.shininess;
-        this.texture = undefined;
-        this.programs = programs;
-    }
-
-    async loadTexture() {
-        // this.texture = gl;
-    }
-
-    isTextured() {
-        return this.texture === undefined;
     }
 
     setColor(v1: number | BABYLON.Vector4, v2?: number, v3?: number, v4?: number) {
@@ -100,7 +91,10 @@ export class PhongMaterial extends Material {
 
         renderer.programs[this.identifier].setUniform(renderer, "uNormalMatrix", options.uNormalMatrix);
 
-        renderer.programs[this.identifier].setUniform(renderer, "color", this.color);
+        renderer.programs[this.identifier].setUniform(renderer, "uColor", this.color);
+        renderer.programs[this.identifier].setUniform(renderer, "uHasTexture", this._hasTexture);
+        renderer.programs[this.identifier].setUniform(renderer, "uTexture", 0, "int");
+
         renderer.programs[this.identifier].setUniform(renderer, "diffuse", this.diffuse);
         renderer.programs[this.identifier].setUniform(renderer, "specular", this.specular);
         renderer.programs[this.identifier].setUniform(renderer, "shininess", this.shininess);

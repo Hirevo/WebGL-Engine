@@ -23,18 +23,28 @@ export class Geometry {
         return (idx >= 0 && idx < this.vertices.length) ? this.vertices[idx] : undefined;
     }
 
-    addFace(v1: number, v2: number, v3: number, normal?: BABYLON.Vector3) {
+    addFace(v1: number, v2: number, v3: number, normal?: BABYLON.Vector3, t1?: BABYLON.Vector2, t2?: BABYLON.Vector2, t3?: BABYLON.Vector2) {
         const edge1 = this.vertices[v2].pos.subtract(this.vertices[v1].pos);
         const edge2 = this.vertices[v3].pos.subtract(this.vertices[v1].pos);
 
         if (normal === undefined)
             normal = BABYLON.Vector3.Normalize(BABYLON.Vector3.Cross(edge1, edge2));
 
+        if (t1 === undefined)
+            t1 = BABYLON.Vector2.Zero();
+        if (t2 === undefined)
+            t2 = BABYLON.Vector2.Zero();
+        if (t3 === undefined)
+            t3 = BABYLON.Vector2.Zero();
+
         const face = {
             v1: this.vertices[v1],
             v2: this.vertices[v2],
             v3: this.vertices[v3],
-            normal: normal
+            normal: normal,
+            t1: t1,
+            t2: t2,
+            t3: t3
         };
 
         this.faces.push(face);

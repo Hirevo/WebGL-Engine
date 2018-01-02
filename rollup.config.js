@@ -1,6 +1,7 @@
 
 import uglify from 'rollup-plugin-uglify';
-import tscPlugin from 'rollup-plugin-typescript';
+import string from 'rollup-plugin-string';
+import typescript from 'rollup-plugin-typescript';
 import tsc from 'typescript';
 import { minify } from 'uglify-es';
 
@@ -22,7 +23,10 @@ let config = {
     },
     external: ['babylonjs'],
     plugins: [
-        tscPlugin({
+        string({
+            include: "**/shaders/**/*"
+        }),
+        typescript({
             typescript: tsc
         })
     ]

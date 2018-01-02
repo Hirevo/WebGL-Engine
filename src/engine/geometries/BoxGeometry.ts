@@ -38,18 +38,18 @@ export class BoxGeometry extends Geometry {
         this.addVertex(new BABYLON.Vector3(final.width, -final.height, -final.depth));
         this.addVertex(new BABYLON.Vector3(-final.width, -final.height, -final.depth));
 
-        this.addFace(0, 1, 2, BABYLON.Vector3.Forward());
-        this.addFace(3, 1, 2, BABYLON.Vector3.Forward());
-        this.addFace(4, 5, 6, new BABYLON.Vector3(0, 0, -1));
-        this.addFace(7, 5, 6, new BABYLON.Vector3(0, 0, -1));
-        this.addFace(0, 1, 4, BABYLON.Vector3.Up());
-        this.addFace(5, 1, 4, BABYLON.Vector3.Up());
-        this.addFace(2, 3, 6, new BABYLON.Vector3(0, -1, 0));
-        this.addFace(7, 3, 6, new BABYLON.Vector3(0, -1, 0));
-        this.addFace(0, 2, 4, BABYLON.Vector3.Right());
-        this.addFace(6, 2, 4, BABYLON.Vector3.Right());
-        this.addFace(1, 3, 5, BABYLON.Vector3.Left());
-        this.addFace(7, 3, 5, BABYLON.Vector3.Left());
+        this.addFace(0, 1, 2, BABYLON.Vector3.Forward(), new BABYLON.Vector2(1, 1), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(3, 1, 2, BABYLON.Vector3.Forward(), new BABYLON.Vector2(0, 0), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(4, 5, 6, new BABYLON.Vector3(0, 0, -1), new BABYLON.Vector2(1, 1), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(7, 5, 6, new BABYLON.Vector3(0, 0, -1), new BABYLON.Vector2(0, 0), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(0, 1, 4, BABYLON.Vector3.Up(), new BABYLON.Vector2(1, 1), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(5, 1, 4, BABYLON.Vector3.Up(), new BABYLON.Vector2(0, 0), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(2, 3, 6, new BABYLON.Vector3(0, -1, 0), new BABYLON.Vector2(1, 1), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(7, 3, 6, new BABYLON.Vector3(0, -1, 0), new BABYLON.Vector2(0, 0), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(0, 2, 4, BABYLON.Vector3.Right(), new BABYLON.Vector2(1, 1), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(6, 2, 4, BABYLON.Vector3.Right(), new BABYLON.Vector2(0, 0), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(1, 3, 5, BABYLON.Vector3.Left(), new BABYLON.Vector2(1, 1), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
+        this.addFace(7, 3, 5, BABYLON.Vector3.Left(), new BABYLON.Vector2(0, 0), new BABYLON.Vector2(0, 1), new BABYLON.Vector2(1, 0));
     }
 
 }

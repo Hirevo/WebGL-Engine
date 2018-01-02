@@ -1,6 +1,8 @@
 import { Material, ProgramList } from "../Material";
 import { Renderer } from "../Renderer";
 import { Constants } from "../Engine";
+import baseMaterialVertexShader from "./../../../shaders/baseShading/vert.vs";
+import baseMaterialFragmentShader from "./../../../shaders/baseShading/frag.fs";
 
 interface BasicMaterialRenderParameters {
     uMMatrix: BABYLON.Matrix;
@@ -16,7 +18,7 @@ export class BasicMaterial extends Material {
     get identifier(): string { return "BasicMaterial"; };
 
     constructor(color: BABYLON.Vector4) {
-        super(Constants.baseMaterialVertexShader, Constants.baseMaterialFragmentShader);
+        super(baseMaterialVertexShader, baseMaterialFragmentShader);
         this.color = color;
         this.programs = programs;
     }

@@ -4,8 +4,8 @@
   "description": "A little WebGL rendering engine. :D",
   "main": "dist/index.js",
   "scripts": {
-    "build-prod": "npm run build-index-prod ; npm run build-motion-prod ; npm run build-terrain-prod ; npm run build-torusknot-prod ; npm run build-cubes-prod ; npm run build-stress-test-prod",
-    "build-dev": "npm run build-index-dev ; npm run build-motion-dev ; npm run build-terrain-dev ; npm run build-torusknot-dev ; npm run build-cubes-dev ; npm run build-stress-test-dev",
+    "build-prod": "npm run build-index-prod ; npm run build-motion-prod ; npm run build-terrain-prod ; npm run build-torusknot-prod ; npm run build-cubes-prod ; npm run build-stress-test-prod ; npm run build-texture-prod ; npm run build-rendertarget-prod",
+    "build-dev": "npm run build-index-dev ; npm run build-motion-dev ; npm run build-terrain-dev ; npm run build-torusknot-dev ; npm run build-cubes-dev ; npm run build-stress-test-dev ; npm run build-texture-dev ; npm run build-rendertarget-dev",
     "build-index-prod": "rollup --environment NODE_ENV:production,INPUT:src/examples/index.ts,OUTPUT:dist/builds/index.js -c",
     "build-index-dev": "rollup --environment NODE_ENV:development,INPUT:src/examples/index.ts,OUTPUT:dist/builds/index.js -c",
     "build-motion-prod": "rollup --environment NODE_ENV:production,INPUT:src/examples/motion.ts,OUTPUT:dist/builds/motion.js -c",
@@ -17,7 +17,11 @@
     "build-cubes-prod": "rollup --environment NODE_ENV:production,INPUT:src/examples/cubes.ts,OUTPUT:dist/builds/cubes.js -c",
     "build-cubes-dev": "rollup --environment NODE_ENV:development,INPUT:src/examples/cubes.ts,OUTPUT:dist/builds/cubes.js -c",
     "build-stress-test-prod": "rollup --environment NODE_ENV:production,INPUT:src/examples/stress-test.ts,OUTPUT:dist/builds/stress-test.js -c",
-    "build-stress-test-dev": "rollup --environment NODE_ENV:development,INPUT:src/examples/stress-test.ts,OUTPUT:dist/builds/stress-test.js -c"
+    "build-stress-test-dev": "rollup --environment NODE_ENV:development,INPUT:src/examples/stress-test.ts,OUTPUT:dist/builds/stress-test.js -c",
+    "build-texture-prod": "rollup --environment NODE_ENV:production,INPUT:src/examples/texture.ts,OUTPUT:dist/builds/texture.js -c",
+    "build-texture-dev": "rollup --environment NODE_ENV:development,INPUT:src/examples/texture.ts,OUTPUT:dist/builds/texture.js -c",
+    "build-rendertarget-prod": "rollup --environment NODE_ENV:production,INPUT:src/examples/rendertarget.ts,OUTPUT:dist/builds/rendertarget.js -c",
+    "build-rendertarget-dev": "rollup --environment NODE_ENV:development,INPUT:src/examples/rendertarget.ts,OUTPUT:dist/builds/rendertarget.js -c"
   },
   "keywords": [
     "WebGL",
@@ -31,6 +35,7 @@
   "license": "ISC",
   "dependencies": {
     "rollup": "^0.50.1",
+    "rollup-plugin-string": "^2.0.2",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^2.0.1",
     "typescript": "^2.6.2",

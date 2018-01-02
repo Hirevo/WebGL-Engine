@@ -1,6 +1,8 @@
 import { Material, ProgramList } from "../Material";
 import { Renderer } from "../Renderer";
 import { Constants } from "../Engine";
+import normalMaterialVertexShader from "./../../../shaders/normalShading/vert.vs";
+import normalMaterialFragmentShader from "./../../../shaders/normalShading/frag.fs";
 
 interface NormalMaterialRenderParameters {
     uMMatrix: BABYLON.Matrix;
@@ -16,8 +18,7 @@ export class NormalMaterial extends Material {
     get identifier(): string { return "NormalMaterial"; };
 
     constructor() {
-        super(Constants.normalMaterialVertexShader, Constants.normalMaterialFragmentShader);
-        this.programs = programs;
+        super(normalMaterialVertexShader, normalMaterialFragmentShader);
     }
 
     setUniforms(renderer: Renderer, options: NormalMaterialRenderParameters) {

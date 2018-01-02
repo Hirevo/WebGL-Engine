@@ -1,5 +1,6 @@
 import { Program } from "./utils";
 import { Renderer } from "./Renderer";
+import { Texture } from "./Texture";
 
 export interface ProgramList {
     [rendererId: string]: Program;
@@ -11,11 +12,20 @@ export class Material {
     protected vertexSource: string;
     protected fragmentSource: string;
     get identifier(): string { return "Material"; };
+    protected _hasTexture: boolean;
+    
+    texture: Texture;
+    get hasTexture() { return this._hasTexture; };
 
-    constructor(vertexShader: string, fragmentShader: string) {
+    constructor(vertexShader: string, fragmentShader: string, texture?: Texture) {
         this.programs = {}
         this.vertexSource = vertexShader;
         this.fragmentSource = fragmentShader;
+        if (texture !== undefined) {
+            this._hasTexture = true;
+            this.texture = texture;
+        } else
+            this._hasTexture = false;
     }
 
     getVertexSource() {

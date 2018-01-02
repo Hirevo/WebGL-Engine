@@ -95,7 +95,11 @@ export class SpotLightHelper extends Mesh {
 
         this.material.setUniforms(renderer, { uMMatrix: this.uMMatrix, uVMatrix, uPMatrix });
 
+        renderer.gl.disableVertexAttribArray(2);
+
         renderer.gl.drawArrays(renderer.gl.LINES, 0, 2 * this.geometry.faces.length * 3);
+
+        renderer.gl.enableVertexAttribArray(2);
 
         this.material.unbind(renderer);
     }
